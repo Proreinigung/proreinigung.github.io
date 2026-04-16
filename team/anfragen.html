@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Gastanfragen — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+.anf-card{background:#fff;border-radius:14px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.anf-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:.15s}
+.anf-header:hover{background:var(--bg)}
+.anf-icon{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.anf-info{flex:1;min-width:0}
+.anf-name{font-weight:700;font-size:.88rem;color:var(--fg)}
+.anf-sub{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.anf-detail{display:none;padding:20px;border-top:1px solid var(--border);background:var(--bg);animation:fadeDown .18s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-4px)}}
+.anf-detail.open{display:block}
+.anf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+@media(max-width:500px){.anf-grid{grid-template-columns:1fr}}
+.anf-field{font-size:.84rem}
+.anf-field label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+.anf-action-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Gastanfragen</div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div class="pro-mob-title"><h1>Gastanfragen <span id="new-count" style="font-size:.75rem;background:#F59E0B;color:#fff;padding:2px 10px;border-radius:999px;font-weight:800;vertical-align:middle"></span></h1></div>
+
+    <div class="pro-card">
+      <div class="pro-card-hd">
+        <h3>Eingehende Anfragen</h3>
+        <div class="pro-filter-bar">
+          <select id="f-status" onchange="loadAnfragen()">
+            <option value="">Alle Status</option>
+            <option value="Neu">Neu</option>
+            <option value="Bearbeitung">In Bearbeitung</option>
+            <option value="Erledigt">Erledigt</option>
+            <option value="Abgelehnt">Abgelehnt</option>
+          </select>
+        </div>
+      </div>
+      <div id="anfragen-list">
+        <div style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px">
+    <button class="pro-pwa-install">Installieren</button>
+    <button class="pro-pwa-close">✕</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let me = null;
+let currentUserId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('anfragen.html');
+  if (!auth) return;
+  me = auth.profile;
+  currentUserId = auth.user.id;
+
+  await loadAnfragen();
+
+  sb.channel('guest_req_watch')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guest_requests' }, async () => {
+      await loadAnfragen();
+      proToast('📩 Neue Gastanfrage eingegangen.', 'info');
+    }).subscribe();
+});
+
+async function loadAnfragen() {
+  const statusFilter = document.getElementById('f-status').value;
+  let all = await DB.getGuestRequests();
+  if (statusFilter) all = all.filter(r => r.status === statusFilter);
+
+  const newCount = all.filter(r => r.status === 'Neu').length;
+  const badge = document.getElementById('new-count');
+  badge.textContent = newCount > 0 ? newCount + ' Neu' : '';
+
+  const list = document.getElementById('anfragen-list');
+  if (!all.length) {
+    list.innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted)">
+      <div style="font-size:3rem;margin-bottom:12px">📭</div>
+      <p>Keine Anfragen${statusFilter ? ' mit Status "'+statusFilter+'"' : ''}.</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = all.map(r => `
+    <div class="anf-card" id="ac-${r.id}">
+      <div class="anf-header" onclick="toggleAnfrage('${r.id}')">
+        <div class="anf-icon">📩</div>
+        <div class="anf-info">
+          <div class="anf-name">${escHtml(r.name)} ${r.firma ? `<small style="color:var(--muted)">· ${escHtml(r.firma)}</small>` : ''}</div>
+          <div class="anf-sub">${escHtml(r.email)} ${r.telefon ? '· '+escHtml(r.telefon) : ''} · ${r.service} · ${new Date(r.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        ${statusBadge(r.status)}
+        <i class="fa-solid fa-chevron-right" style="color:var(--muted);font-size:.8rem;flex-shrink:0;margin-left:4px"></i>
+      </div>
+      <div class="anf-detail" id="ad-${r.id}">
+        <div class="anf-grid">
+          <div class="anf-field"><label>Name</label>${escHtml(r.name)}</div>
+          <div class="anf-field"><label>Firma</label>${escHtml(r.firma||'—')}</div>
+          <div class="anf-field"><label>E-Mail</label><a href="mailto:${escHtml(r.email)}" style="color:var(--primary)">${escHtml(r.email)}</a></div>
+          <div class="anf-field"><label>Telefon</label>${r.telefon ? `<a href="tel:${escHtml(r.telefon)}" style="color:var(--primary)">${escHtml(r.telefon)}</a>` : '—'}</div>
+          <div class="anf-field"><label>Leistung</label>${escHtml(r.service)}</div>
+          <div class="anf-field"><label>Adresse</label>${escHtml(r.adresse||'—')}</div>
+          <div class="anf-field"><label>Termin</label>${r.datum ? new Date(r.datum).toLocaleDateString('de-DE') : '—'}</div>
+          <div class="anf-field"><label>Fläche</label>${escHtml(r.flaeche||'—')}</div>
+          <div class="anf-field"><label>Frequenz</label>${escHtml(r.frequenz||'—')}</div>
+          <div class="anf-field"><label>Budget</label>${escHtml(r.budget||'—')}</div>
+          ${r.kommentar ? `<div class="anf-field" style="grid-column:span 2"><label>Kommentar</label>${escHtml(r.kommentar)}</div>` : ''}
+        </div>
+        <div class="anf-action-row">
+          <label style="font-size:.78rem;font-weight:700;color:var(--muted)">Status:</label>
+          <select class="pro-input" style="width:auto;padding:5px 10px;font-size:.8rem" onchange="updateStatus('${r.id}',this.value)">
+            <option value="Neu"         ${r.status==='Neu'         ?'selected':''}>Neu</option>
+            <option value="Bearbeitung" ${r.status==='Bearbeitung' ?'selected':''}>In Bearbeitung</option>
+            <option value="Erledigt"    ${r.status==='Erledigt'    ?'selected':''}>Erledigt</option>
+            <option value="Abgelehnt"   ${r.status==='Abgelehnt'   ?'selected':''}>Abgelehnt</option>
+          </select>
+          <a href="mailto:${r.email}?subject=Ihre Anfrage bei Proreinigung&body=Sehr geehrte/r ${encodeURIComponent(r.name)},"
+             class="pro-btn" style="font-size:.8rem" target="_blank">
+            <i class="fa-solid fa-envelope"></i> E-Mail
+          </a>
+          ${r.telefon ? `<a href="https://wa.me/${r.telefon.replace(/\D/g,'')}" target="_blank"
+             class="pro-btn" style="font-size:.8rem;background:#25D366">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </a>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleAnfrage(id) {
+  document.getElementById('ad-' + id).classList.toggle('open');
+}
+
+async function updateStatus(id, status) {
+  const res = await DB.updateGuestRequest(id, { status });
+  if (res.ok) { proToast('Status: ' + status, 'success'); await loadAnfragen(); }
+  else proToast(res.msg, 'error');
+}
+
+function statusBadge(s) {
+  const map = { Neu:'pb-neu', Bearbeitung:'pb-bearbeitung', Erledigt:'pb-done', Abgelehnt:'pb-abgelehnt' };
+  return `<span class="pro-badge ${map[s]||'pb-info'}">${escHtml(s||'—')}</span>`;
+}
+
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

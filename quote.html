@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angebot anfragen — Proreinigung</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ══ NAVBAR ═══════════════════════════════════════════════ -->
+<nav id="pr-navbar" class="transparent">
+  <div class="pr-nav-inner">
+    <a href="index.html">
+      <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto;display:block">
+    </a>
+    <div class="pr-nav-links">
+      <a href="index.html" class="nav-link-item">Startseite</a>
+      <a href="services.html" class="nav-link-item">Leistungen</a>
+      <a href="about.html" class="nav-link-item">Über uns</a>
+      <a href="blog.html" class="nav-link-item">Blog</a>
+      <a href="careers.html" class="nav-link-item">Karriere</a>
+      <a href="contact.html" class="nav-link-item">Kontakt</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="login.html" class="nav-login-link">Anmelden</a>
+      <a href="quote.html" class="pr-btn pr-btn-yellow" style="padding:10px 20px;font-size:.82rem">
+        Angebot anfragen
+        <span class="arrow" style="width:26px;height:26px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+    </div>
+    <button class="pr-hamburger" id="pr-ham" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="pr-mobile-menu" id="pr-mobile">
+  <a href="index.html">Startseite</a>
+  <a href="services.html">Leistungen</a>
+  <a href="about.html">Über uns</a>
+  <a href="blog.html">Blog</a>
+  <a href="careers.html">Karriere</a>
+  <a href="contact.html">Kontakt</a>
+  <div class="pr-mobile-actions">
+    <a href="login.html" class="pr-btn pr-btn-outline-white">Anmelden</a>
+    <a href="quote.html" class="pr-btn pr-btn-yellow">Angebot anfragen <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></span></a>
+  </div>
+</div>
+</div>
+
+<!-- ══ PAGE HERO ════════════════════════════════════════════ -->
+<section class="pr-page-hero">
+  <div class="pr-page-hero-inner">
+    <span class="eyebrow">Kostenlos & unverbindlich</span>
+    <h1>Angebot anfragen</h1>
+    <p class="sub">Füllen Sie das Formular aus und wir erstellen Ihnen innerhalb von 24 Stunden ein individuelles Angebot.</p>
+    <div class="pr-breadcrumb">
+      <a href="index.html">Startseite</a><span>/</span><span>Angebot anfragen</span>
+    </div>
+    </div>
+</section>
+
+<!-- ══ QUOTE FORM ════════════════════════════════════════════ -->
+<section class="quote-page">
+  <div class="container">
+    <div class="quote-grid">
+      <!-- Info sidebar -->
+      <div class="quote-info">
+        <h3>Warum Proreinigung?</h3>
+        <p>Wir bieten maßgeschneiderte Reinigungslösungen für Ihr Unternehmen.</p>
+        <div class="qi-item">
+          <div class="qi-icon">⚡</div>
+          <div class="qi-text"><h4>Schnelle Antwort</h4><p>Angebot innerhalb von 24 Stunden</p></div>
+        </div>
+        <div class="qi-item">
+          <div class="qi-icon">💰</div>
+          <div class="qi-text"><h4>Faire Preise</h4><p>Transparente Kosten ohne versteckte Gebühren</p></div>
+        </div>
+        <div class="qi-item">
+          <div class="qi-icon">🏆</div>
+          <div class="qi-text"><h4>Qualitätsgarantie</h4><p>100% Zufriedenheitsgarantie</p></div>
+        </div>
+        <div class="qi-item">
+          <div class="qi-icon">🔒</div>
+          <div class="qi-text"><h4>Voll versichert</h4><p>Umfassende Haftpflichtversicherung</p></div>
+        </div>
+        <hr style="border-color:rgba(255,255,255,.15);margin:20px 0">
+        <h4 style="color:#fff;margin-bottom:16px">Direktkontakt</h4>
+        <a href="https://wa.me/491637606478" target="_blank" class="btn" style="background:#25D366;color:#fff;width:100%;justify-content:center;margin-bottom:10px">
+          <i class="fab fa-whatsapp"></i> WhatsApp: +49 163 7606478
+        </a>
+        <a href="mailto:Proreinigung@gmail.com" class="btn btn-outline-white" style="width:100%;justify-content:center">
+          <i class="fas fa-envelope"></i> Proreinigung@gmail.com
+        </a>
+      </div>
+
+      <!-- Form -->
+      <div class="quote-form-card">
+        <h2>Anfrage stellen</h2>
+        <p>Alle mit <span style="color:#e53e3e">*</span> markierten Felder sind Pflichtfelder.</p>
+
+        <form id="quote-form" novalidate>
+          <div class="form-section-title">1. Kontaktdaten</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="q-vorname">Vorname <span>*</span></label>
+              <input type="text" id="q-vorname" class="form-control" placeholder="Max" required>
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="q-nachname">Nachname <span>*</span></label>
+              <input type="text" id="q-nachname" class="form-control" placeholder="Mustermann" required>
+              <div class="form-error"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="q-firma">Unternehmen</label>
+              <input type="text" id="q-firma" class="form-control" placeholder="Musterfirma GmbH">
+            </div>
+            <div class="form-group">
+              <label for="q-email">E-Mail <span>*</span></label>
+              <input type="email" id="q-email" class="form-control" placeholder="ihre@email.de" required>
+              <div class="form-error"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="q-telefon">Telefon <span>*</span></label>
+            <input type="tel" id="q-telefon" class="form-control" placeholder="+49 123 456789" required>
+            <div class="form-error"></div>
+          </div>
+
+          <div class="form-section-title">2. Leistungsdetails</div>
+          <div class="form-group">
+            <label for="q-service">Gewünschte Leistung <span>*</span></label>
+            <select id="q-service" class="form-control" required>
+              <option value="">— Bitte wählen —</option>
+              <option>Büroreinigung</option>
+              <option>Industriereinigung</option>
+              <option>Glasreinigung</option>
+              <option>Grundreinigung</option>
+              <option>Fassadenreinigung</option>
+              <option>Teppichreinigung</option>
+              <option>Unterhaltsreinigung</option>
+              <option>Sonstige Leistung</option>
+            </select>
+            <div class="form-error"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="q-flaeche">Fläche (m²)</label>
+              <input type="number" id="q-flaeche" class="form-control" placeholder="z.B. 250" min="1">
+            </div>
+            <div class="form-group">
+              <label for="q-frequenz">Häufigkeit <span>*</span></label>
+              <select id="q-frequenz" class="form-control" required>
+                <option value="">— Bitte wählen —</option>
+                <option>Einmalig</option>
+                <option>Täglich</option>
+                <option>Wöchentlich</option>
+                <option>Monatlich</option>
+                <option>Nach Vereinbarung</option>
+              </select>
+              <div class="form-error"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="q-adresse">Adresse des Objekts <span>*</span></label>
+            <input type="text" id="q-adresse" class="form-control" placeholder="Rheydter Str. 254, 41065 Mönchengladbach" required>
+            <div class="form-error"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="q-datum">Gewünschter Termin</label>
+              <input type="date" id="q-datum" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="q-budget">Budget (optional)</label>
+              <select id="q-budget" class="form-control">
+                <option value="">— Bitte wählen —</option>
+                <option>Unter 200 €</option>
+                <option>200 – 500 €</option>
+                <option>500 – 1.000 €</option>
+                <option>1.000 – 3.000 €</option>
+                <option>Über 3.000 €</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section-title">3. Zusätzliche Informationen</div>
+          <div class="form-group">
+            <label for="q-kommentar">Kommentar / Besondere Anforderungen</label>
+            <textarea id="q-kommentar" class="form-control" placeholder="Beschreiben Sie Ihre Anforderungen, besondere Reinigungsbedürfnisse oder sonstige Hinweise…"></textarea>
+          </div>
+
+          <label class="form-check" style="margin-bottom:24px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="q-datenschutz" required style="margin-top:3px">
+            <span style="font-size:.85rem;color:var(--text-light)">Ich habe die <a href="#" style="color:var(--primary-light)">Datenschutzerklärung</a> gelesen und akzeptiere die Verarbeitung meiner Daten zur Angebotserstellung. <span style="color:#e53e3e">*</span></span>
+          </label>
+
+          <button type="submit" class="btn btn-accent btn-lg" style="width:100%;justify-content:center">
+            <i class="fas fa-paper-plane"></i> Anfrage absenden
+          </button>
+          <p style="font-size:.8rem;color:var(--text-light);text-align:center;margin-top:12px">
+            Wir antworten innerhalb von 24 Stunden. Keine Verpflichtung, kein Risiko.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Guest choice modal -->
+<div id="guest-choice-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;max-width:460px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+    <h3 style="color:var(--primary-dark);margin-bottom:8px">Wie möchten Sie fortfahren?</h3>
+    <p style="color:var(--text-light);font-size:.9rem;margin-bottom:28px">
+      Sie sind nicht angemeldet. Wählen Sie eine Option:
+    </p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button id="btn-send-as-guest" class="btn btn-accent btn-lg" style="justify-content:center">
+        <i class="fas fa-paper-plane"></i> Direkt als Gast senden
+      </button>
+      <div style="color:var(--text-light);font-size:.8rem">— oder —</div>
+      <a href="login.html" class="btn btn-outline btn-lg" style="justify-content:center">
+        <i class="fas fa-sign-in-alt"></i> Anmelden
+      </a>
+      <a href="register.html" class="btn" style="justify-content:center;background:var(--primary-dark);color:#fff">
+        <i class="fas fa-user-plus"></i> Kostenloses Konto erstellen
+      </a>
+    </div>
+    <p style="font-size:.78rem;color:var(--text-light);margin-top:16px">
+      Mit einem Konto können Sie Ihre Anfragen verfolgen und direkt mit dem Team kommunizieren.
+    </p>
+    <button onclick="document.getElementById('guest-choice-modal').style.display='none'"
+      style="background:none;border:none;color:var(--text-light);cursor:pointer;margin-top:12px;font-size:.85rem">
+      Abbrechen
+    </button>
+  </div>
+</div>
+
+<!-- FOOTER (compact) -->
+<footer id="pr-footer">
+  <div class="pr-container">
+    <div class="pr-footer-grid">
+      <div class="pr-footer-brand">
+        <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto">
+        <p>Ihr zuverlässiger Reinigungspartner in Deutschland. Professionell, nachhaltig und effizient — seit über 15 Jahren.</p>
+        <div class="pr-footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="XING"><i class="fab fa-xing"></i></a>
+        </div>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="services.html">Büroreinigung</a></li>
+          <li><a href="services.html">Industriereinigung</a></li>
+          <li><a href="services.html">Glasreinigung</a></li>
+          <li><a href="services.html">Grundreinigung</a></li>
+          <li><a href="services.html">Fassadenreinigung</a></li>
+          <li><a href="services.html">Teppichreinigung</a></li>
+          <li><a href="services.html">Parkhausreinigung</a></li>
+          <li><a href="services.html">Krankenhausreinigung</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Unternehmen</h4>
+        <ul>
+          <li><a href="about.html">Über uns</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="careers.html">Karriere</a></li>
+          <li><a href="quote.html">Angebot anfragen</a></li>
+          <li><a href="contact.html">Kontakt</a></li>
+          <li><a href="login.html">Mein Konto</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Kontakt</h4>
+        <div class="pr-footer-contact">
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fab fa-whatsapp"></i></div>
+            <div class="tx"><a href="https://wa.me/491637606478">+49 163 7606478</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-envelope"></i></div>
+            <div class="tx"><a href="mailto:Proreinigung@gmail.com">Proreinigung@gmail.com</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="tx">Rheydter Str. 254<br>41065 Mönchengladbach</div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-clock"></i></div>
+            <div class="tx">Mo–Fr: 07:00–18:00<br>Sa: 08:00–14:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pr-footer-bottom">
+      <p>© 2026 Proreinigung GmbH. Alle Rechte vorbehalten.</p>
+      <div class="pr-footer-legal">
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp float -->
+<div class="wa-float">
+  <a href="https://wa.me/491637606478" target="_blank" class="wa-btn" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+</div>
+<script>
+function validateQuoteForm() {
+  const fields = ['q-vorname','q-nachname','q-email','q-telefon','q-service','q-frequenz','q-adresse'];
+  let valid = true;
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.value.trim()) { el.classList.add('error'); valid = false; }
+    else if (el) el.classList.remove('error');
+  });
+  if (!document.getElementById('q-datenschutz').checked) {
+    showToast('Hinweis', 'Bitte Datenschutzerklärung akzeptieren.', 'error'); valid = false;
+  }
+  if (!valid) { showToast('Fehler', 'Bitte alle Pflichtfelder ausfüllen.', 'error'); }
+  return valid;
+}
+
+function getGuestData() {
+  return {
+    name:      document.getElementById('q-vorname').value.trim() + ' ' + document.getElementById('q-nachname').value.trim(),
+    email:     document.getElementById('q-email').value.trim(),
+    telefon:   document.getElementById('q-telefon').value.trim(),
+    firma:     document.getElementById('q-firma').value.trim(),
+    service:   document.getElementById('q-service').value,
+    adresse:   document.getElementById('q-adresse').value.trim(),
+    datum:     document.getElementById('q-datum').value || null,
+    flaeche:   document.getElementById('q-flaeche').value ? document.getElementById('q-flaeche').value + ' m²' : '',
+    frequenz:  document.getElementById('q-frequenz').value,
+    budget:    document.getElementById('q-budget').value,
+    kommentar: document.getElementById('q-kommentar').value
+  };
+}
+
+async function sendGuestRequest() {
+  const modal = document.getElementById('guest-choice-modal');
+  modal.style.display = 'none';
+
+  const btn = document.querySelector('#quote-form button[type=submit]');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Senden…';
+  btn.disabled = true;
+
+  const guestData = getGuestData();
+  const res = await DB.createGuestRequest(guestData);
+
+  if (res.ok) {
+    document.querySelector('.quote-form-card').innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:4rem;margin-bottom:20px">✅</div>
+        <h2 style="color:var(--primary-dark);margin-bottom:12px">Anfrage erfolgreich gesendet!</h2>
+        <p style="color:var(--text-light);margin-bottom:24px">Vielen Dank, <strong>${guestData.name}</strong>! Wir kontaktieren Sie binnen <strong>24 Stunden</strong> unter <strong>${guestData.email}</strong>.</p>
+        <p style="font-size:.88rem;color:var(--text-light);margin-bottom:28px">Möchten Sie Ihre Anfragen verfolgen und direkt mit unserem Team kommunizieren? Erstellen Sie ein kostenloses Konto.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="register.html" class="btn btn-accent btn-lg"><i class="fas fa-user-plus"></i> Konto erstellen</a>
+          <a href="index.html" class="btn btn-outline btn-lg">Zur Startseite</a>
+        </div>
+      </div>`;
+  } else {
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Anfrage absenden';
+    btn.disabled = false;
+    // Show friendly error with account options
+    document.querySelector('.quote-form-card').insertAdjacentHTML('beforeend', `
+      <div id="guest-error-banner" style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:20px;margin-top:20px;text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:8px">⚠️</div>
+        <p style="font-weight:600;color:#856404;margin-bottom:4px">Anfrage konnte nicht gesendet werden</p>
+        <p style="font-size:.85rem;color:#856404;margin-bottom:16px">Bitte melden Sie sich an oder erstellen Sie ein Konto, um Ihre Anfrage zu senden.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a href="login.html" class="btn btn-accent" style="font-size:.85rem"><i class="fas fa-sign-in-alt"></i> Anmelden</a>
+          <a href="register.html" class="btn" style="background:var(--primary-dark);color:#fff;font-size:.85rem"><i class="fas fa-user-plus"></i> Konto erstellen</a>
+          <button onclick="document.getElementById('guest-error-banner').remove();sendGuestRequest()" class="btn btn-outline" style="font-size:.85rem"><i class="fas fa-redo"></i> Erneut versuchen</button>
+        </div>
+      </div>`);
+  }
+}
+
+// Expose globally so inline onclick can call it
+window.sendGuestRequest = sendGuestRequest;
+
+document.getElementById('btn-send-as-guest').addEventListener('click', sendGuestRequest);
+
+document.getElementById('quote-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!validateQuoteForm()) return;
+
+  const { data: { user } } = await sb.auth.getUser();
+
+  if (user) {
+    const btn = this.querySelector('button[type=submit]');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Senden…';
+    btn.disabled = true;
+    const orderData = {
+      service:   document.getElementById('q-service').value,
+      adresse:   document.getElementById('q-adresse').value,
+      datum:     document.getElementById('q-datum').value || null,
+      flaeche:   document.getElementById('q-flaeche').value ? document.getElementById('q-flaeche').value + ' m²' : '',
+      frequenz:  document.getElementById('q-frequenz').value,
+      budget:    document.getElementById('q-budget').value,
+      kommentar: document.getElementById('q-kommentar').value,
+    };
+    const res = await DB.createOrder(orderData);
+    if (res.ok) {
+      showToast('Anfrage gesendet!', `Auftrag ${res.order.order_number} wurde erstellt.`, 'success');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    } else {
+      showToast('Fehler', res.msg || 'Fehler beim Senden.', 'error');
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Anfrage absenden';
+      btn.disabled = false;
+    }
+  } else {
+    // Guest: show choice modal
+    const modal = document.getElementById('guest-choice-modal');
+    modal.style.display = 'flex';
+  }
+});
+
+// Close modal on backdrop click
+document.getElementById('guest-choice-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+</script>
+
+<div class="toast-container"></div>
+<button class="back-top" id="back-top" aria-label="Nach oben" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/db.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/main.js"></script>
+<script>
+// Navbar scroll
+const navbar = document.getElementById('pr-navbar');
+if (navbar) {
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('solid', window.scrollY > 60);
+    navbar.classList.toggle('transparent', window.scrollY <= 60);
+    const bt = document.getElementById('back-top');
+    if (bt) bt.classList.toggle('show', window.scrollY > 400);
+  });
+}
+// Mobile menu
+const ham = document.getElementById('pr-ham');
+const mob = document.getElementById('pr-mobile');
+if (ham && mob) {
+  ham.addEventListener('click', () => mob.classList.toggle('open'));
+  mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mob.classList.remove('open')));
+}
+// Scroll reveal
+const srObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); srObs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.sr,.sr-left,.sr-right').forEach(el => srObs.observe(el));
+// Auth link
+(async () => {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      document.querySelectorAll('a[href="login.html"]').forEach(el => { el.href = 'dashboard.html'; el.textContent = 'Mein Konto'; });
+    }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

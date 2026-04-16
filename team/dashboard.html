@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Pro Team"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<link rel="apple-touch-icon" href="../assets/images/Logo.png"/>
+<title>Dashboard — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+/* ── Dashboard topbar extras ─────────────────────────── */
+.dash-topbar-center{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 16px;min-width:0;overflow:hidden}
+.dash-greeting-text{font-size:14.5px;font-weight:800;color:var(--text);white-space:nowrap}
+.dash-greeting-sub{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap}
+.dash-date-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--bg);border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.dash-online-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:#DCFCE7;border:1.5px solid #BBF7D0;font-size:12px;font-weight:700;color:#16A34A;white-space:nowrap;cursor:pointer;flex-shrink:0;position:relative}
+.dash-online-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;animation:dashPulse 2s infinite}
+@keyframes dashPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+/* Online popover */
+.dash-online-pop{display:none;position:absolute;top:calc(100% + 10px);right:0;min-width:220px;background:var(--card);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid var(--border);z-index:600;padding:14px;animation:proFadeUp .15s ease}
+.dash-online-pop.open{display:block}
+.dash-online-pop-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.dash-online-member{display:flex;align-items:center;gap:10px;padding:6px 0}
+.dash-online-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;overflow:hidden;border:2px solid #22C55E}
+.dash-online-av img{width:100%;height:100%;object-fit:cover}
+.dash-online-name{font-size:13px;font-weight:600;color:var(--text)}
+.dash-online-role{font-size:11px;color:var(--muted)}
+@media(max-width:1100px){.dash-topbar-center{display:none}}
+@media(max-width:860px){.dash-date-pill{display:none}}
+
+/* ── Stat grid ───────────────────────────────────────── */
+.dash-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.dash-kpi{background:var(--card);border-radius:var(--r);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;transition:transform var(--t),box-shadow var(--t)}
+.dash-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.dash-kpi-ic{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff}
+.di-blue{background:linear-gradient(135deg,#1565C0,#0288D1)}
+.di-green{background:linear-gradient(135deg,#22C55E,#16A34A)}
+.di-teal{background:linear-gradient(135deg,#00BCD4,#0097A7)}
+.di-orange{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.di-purple{background:linear-gradient(135deg,#8B5CF6,#7C3AED)}
+.di-pink{background:linear-gradient(135deg,#EC4899,#DB2777)}
+.dash-kpi-body{flex:1;min-width:0}
+.dash-kpi-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.dash-kpi-val{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.dash-kpi-foot{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:8px}
+.dkf-blue{color:var(--primary)}.dkf-green{color:var(--success)}.dkf-red{color:var(--error)}
+
+/* ── Charts ──────────────────────────────────────────── */
+.dash-charts{display:grid;grid-template-columns:1fr 340px;gap:16px}
+.dash-chart-card{background:var(--card);border-radius:var(--r);padding:22px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.dash-chart-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.dash-chart-hd h3{font-size:15px;font-weight:700}
+.dash-legend{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2)}
+.dash-leg-dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:4px}
+.dash-chart-body{position:relative;height:210px}
+.dash-chart-body canvas{width:100%!important;height:100%!important}
+.dash-donut-wrap{display:flex;flex-direction:column;gap:14px}
+.dash-donut-cont{position:relative;width:150px;height:150px;margin:0 auto}
+.dash-donut-cont canvas{width:100%!important;height:100%!important}
+.dash-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.dash-donut-val{display:block;font-size:22px;font-weight:800;color:var(--text);line-height:1}
+.dash-donut-sub{font-size:10px;color:var(--muted);font-weight:600}
+.dash-cat-list{display:flex;flex-direction:column;gap:9px}
+.dash-cat{display:flex;flex-direction:column;gap:4px}
+.dash-cat-info{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
+.dash-cat-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dash-cat-num{margin-left:auto;font-weight:700;color:var(--text);font-size:12px}
+.dash-cat-bar-wrap{height:5px;background:var(--border);border-radius:8px;overflow:hidden}
+.dash-cat-bar{height:100%;border-radius:8px;transition:width 1s ease}
+
+/* ── Orders section ──────────────────────────────────── */
+.dash-table-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.dash-table-hd h3{font-size:15px;font-weight:700}
+.dash-view-all{font-size:13px;color:var(--primary);font-weight:600}
+.dash-total{font-weight:700;color:var(--text)!important;font-size:14px}
+.dash-mob-list{display:none;flex-direction:column;gap:1px}
+.dash-mob-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);gap:12px}
+.dash-mob-row:last-child{border-bottom:none}
+.dash-mob-l{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.dash-mob-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media(max-width:1200px){.dash-kpi-grid{grid-template-columns:repeat(3,1fr)}.dash-charts{grid-template-columns:1fr}.dash-donut-wrap{flex-direction:row;align-items:center}.dash-donut-cont{flex-shrink:0}.dash-cat-list{flex:1}}
+@media(max-width:640px){.dash-kpi-grid{grid-template-columns:repeat(2,1fr);gap:12px}.dash-kpi{padding:14px;gap:10px}.dash-kpi-ic{width:40px;height:40px;font-size:16px;border-radius:10px}.dash-kpi-val{font-size:18px}.dash-chart-card{padding:16px}.dash-chart-body{height:170px}.dash-donut-wrap{flex-direction:column}.pro-table-wrap{display:none}.dash-mob-list{display:flex}}
+@media(max-width:400px){.dash-kpi-grid{grid-template-columns:1fr 1fr;gap:10px}.dash-kpi-val{font-size:16px}}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge<span class="pro-sb-badge pro-new-orders-badge" style="display:none">0</span></a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten<span class="pro-sb-badge pro-contact-count" style="display:none">0</span></a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar" style="gap:0">
+    <div class="pro-topbar-left" style="flex-shrink:0">
+      <div class="pro-topbar-title">Dashboard</div>
+      <div class="pro-topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Suchen…" id="searchInput"/>
+      </div>
+    </div>
+
+    <!-- Center greeting -->
+    <div class="dash-topbar-center">
+      <div class="dash-greeting-text" id="dashGreeting">—</div>
+      <div class="dash-greeting-sub" id="dashSub">Übersicht Ihrer heutigen Aufträge</div>
+    </div>
+
+    <div class="pro-topbar-right" style="flex-shrink:0">
+      <!-- Date -->
+      <div class="dash-date-pill"><i class="fa-regular fa-calendar"></i><span id="dashDate">—</span></div>
+      <!-- Online -->
+      <div class="dash-online-pill" id="onlinePill" onclick="toggleOnlinePop(event)">
+        <span class="dash-online-dot"></span>
+        <span id="dashOnlineCount">0</span>&nbsp;Online
+        <div class="dash-online-pop" id="onlinePop">
+          <div class="dash-online-pop-title">Team Online</div>
+          <div id="onlinePopList"><span style="font-size:12px;color:var(--muted)">Lade…</span></div>
+        </div>
+      </div>
+      <!-- Bell -->
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <!-- User -->
+      <div class="pro-topbar-user" onclick="window.location.href='profil.html'" style="cursor:pointer">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+
+    <div class="pro-mob-title">
+      <h1 id="mobGreeting">Dashboard</h1>
+      <p id="mobDate" style="color:var(--muted);font-size:13px">—</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <section class="dash-kpi-grid">
+      <a href="orders.html" class="dash-kpi" style="text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-blue"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Aufträge gesamt</p>
+          <h2 class="dash-kpi-val" id="kpi-orders">—</h2>
+          <div class="dash-kpi-foot dkf-blue"><i class="fa-solid fa-layer-group"></i><span>Alle Aufträge</span></div>
+        </div>
+      </a>
+      <a href="orders.html?status=Aktiv" class="dash-kpi" style="text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-green"><i class="fa-solid fa-bolt"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Aktive Aufträge</p>
+          <h2 class="dash-kpi-val" id="kpi-active">—</h2>
+          <div class="dash-kpi-foot dkf-green"><i class="fa-solid fa-arrow-trend-up"></i><span>In Bearbeitung</span></div>
+        </div>
+      </a>
+      <a href="orders.html?status=Abgeschlossen" class="dash-kpi" style="text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-teal"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Abgeschlossen</p>
+          <h2 class="dash-kpi-val" id="kpi-done">—</h2>
+          <div class="dash-kpi-foot dkf-blue"><i class="fa-solid fa-check-double"></i><span>Fertiggestellt</span></div>
+        </div>
+      </a>
+      <!-- Revenue — admin only -->
+      <a href="umsatz.html" class="dash-kpi pro-admin-only" style="display:none;text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-orange"><i class="fa-solid fa-euro-sign"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Umsatz (bezahlt)</p>
+          <h2 class="dash-kpi-val" id="kpi-revenue">—</h2>
+          <div class="dash-kpi-foot dkf-green"><i class="fa-solid fa-arrow-trend-up"></i><span>Bezahlte Rechnungen</span></div>
+        </div>
+      </a>
+      <a href="admin.html" class="dash-kpi" style="text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-purple"><i class="fa-solid fa-users"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Kunden</p>
+          <h2 class="dash-kpi-val" id="kpi-clients">—</h2>
+          <div class="dash-kpi-foot dkf-blue"><i class="fa-solid fa-user-check"></i><span>Registriert</span></div>
+        </div>
+      </a>
+      <a href="nachrichten.html" class="dash-kpi" style="text-decoration:none;color:inherit;cursor:pointer">
+        <div class="dash-kpi-ic di-pink"><i class="fa-solid fa-envelope-open-text"></i></div>
+        <div class="dash-kpi-body">
+          <p class="dash-kpi-label">Nachrichten</p>
+          <h2 class="dash-kpi-val" id="kpi-msgs">—</h2>
+          <div class="dash-kpi-foot dkf-red"><i class="fa-solid fa-hourglass-half"></i><span>Unbeantwortet</span></div>
+        </div>
+      </a>
+    </section>
+
+    <!-- Charts -->
+    <section class="dash-charts">
+      <div class="dash-chart-card">
+        <div class="dash-chart-hd">
+          <h3>Aufträge &amp; Umsatz</h3>
+          <div class="dash-legend">
+            <span><span class="dash-leg-dot" style="background:#1565C0"></span>Aufträge</span>
+            <span><span class="dash-leg-dot" style="background:#00BCD4"></span>Umsatz</span>
+          </div>
+        </div>
+        <div class="dash-chart-body"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="dash-chart-card">
+        <div class="dash-chart-hd"><h3>Auftragsstatus</h3></div>
+        <div class="dash-donut-wrap">
+          <div class="dash-donut-cont">
+            <canvas id="donutChart"></canvas>
+            <div class="dash-donut-center">
+              <span class="dash-donut-val" id="donutTotal">0</span>
+              <span class="dash-donut-sub">Aufträge</span>
+            </div>
+          </div>
+          <div class="dash-cat-list">
+            <div class="dash-cat"><div class="dash-cat-info"><span class="dash-cat-dot" style="background:#1565C0"></span>Neu<strong class="dash-cat-num" id="dn-neu">0</strong></div><div class="dash-cat-bar-wrap"><div class="dash-cat-bar" id="db-neu" style="background:#1565C0;width:0%"></div></div></div>
+            <div class="dash-cat"><div class="dash-cat-info"><span class="dash-cat-dot" style="background:#22C55E"></span>Aktiv<strong class="dash-cat-num" id="dn-aktiv">0</strong></div><div class="dash-cat-bar-wrap"><div class="dash-cat-bar" id="db-aktiv" style="background:#22C55E;width:0%"></div></div></div>
+            <div class="dash-cat"><div class="dash-cat-info"><span class="dash-cat-dot" style="background:#8B5CF6"></span>Abgeschlossen<strong class="dash-cat-num" id="dn-done">0</strong></div><div class="dash-cat-bar-wrap"><div class="dash-cat-bar" id="db-done" style="background:#8B5CF6;width:0%"></div></div></div>
+            <div class="dash-cat"><div class="dash-cat-info"><span class="dash-cat-dot" style="background:#EF4444"></span>Storniert<strong class="dash-cat-num" id="dn-cancel">0</strong></div><div class="dash-cat-bar-wrap"><div class="dash-cat-bar" id="db-cancel" style="background:#EF4444;width:0%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Orders -->
+    <section class="pro-card">
+      <div class="dash-table-hd">
+        <h3>Aufträge</h3>
+        <a href="orders.html" class="dash-view-all">Alle anzeigen →</a>
+      </div>
+
+      <div class="pro-tabs-wrap">
+        <div class="pro-tabs">
+          <button class="pro-tab active" onclick="filterOrders('alle',this)">Alle</button>
+          <button class="pro-tab" onclick="filterOrders('Neu',this)">Neu</button>
+          <button class="pro-tab" onclick="filterOrders('Aktiv',this)">Aktiv</button>
+          <button class="pro-tab" onclick="filterOrders('Abgeschlossen',this)">Abgeschlossen</button>
+          <button class="pro-tab" onclick="filterOrders('Storniert',this)">Storniert</button>
+        </div>
+      </div>
+
+      <div class="pro-table-wrap">
+        <table class="pro-table">
+          <thead>
+            <tr>
+              <th>Kunde</th><th>Service</th><th>Datum</th><th>Status</th><th>Preis</th><th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Wird geladen…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="dash-mob-list" id="ordersMobList"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="pro-bot-nav">
+  <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+  <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+  <a href="chat.html" class="pro-bot-item pro-bot-fab-wrap"><div class="pro-bot-fab"><i class="fa-solid fa-comments"></i></div></a>
+  <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span><span class="pro-bot-badge pro-contact-count" style="display:none">0</span></a>
+  <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+</nav>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div class="pro-pwa-ic"><i class="fa-solid fa-broom"></i></div>
+  <div class="pro-pwa-txt"><strong>App installieren</strong><span>Zum Startbildschirm hinzufügen</span></div>
+  <button class="pro-pwa-install">Installieren</button>
+  <button class="pro-pwa-close"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- Order Detail Panel -->
+<div class="pro-panel-overlay" id="pro-panel-overlay" onclick="closePanel()"></div>
+<div class="pro-panel" id="pro-panel">
+  <div class="pro-panel-hd">
+    <h3 id="panel-title">Auftragsdetails</h3>
+    <button class="pro-panel-close" onclick="closePanel()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="pro-panel-body" id="panel-body"><p style="color:var(--muted)">Laden…</p></div>
+  <div class="pro-panel-footer" id="panel-footer"></div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="pro-modal" id="invoice-modal">
+  <div class="pro-modal-box">
+    <h3><i class="fa-solid fa-file-invoice" style="color:var(--primary)"></i> Rechnung erstellen</h3>
+    <p>Die Rechnung wird dem Kunden automatisch angezeigt.</p>
+    <input type="hidden" id="inv-order-id"/><input type="hidden" id="inv-client-id"/><input type="hidden" id="inv-order-number"/>
+    <div class="pro-form-group"><label>Betrag (€) *</label><input type="number" id="inv-betrag" class="pro-input" placeholder="z.B. 480" step="0.01" min="0"/></div>
+    <div class="pro-form-group"><label>Fälligkeitsdatum</label><input type="date" id="inv-due" class="pro-input"/></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="pro-btn pro-btn-primary" onclick="submitInvoice()"><i class="fa-solid fa-file-invoice"></i> Erstellen</button>
+      <button class="pro-btn pro-btn-secondary" onclick="closeInvoiceModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let currentUserId = null;
+let currentProfile = null;
+let allOrders = [];
+let barChartInst = null;
+let donutChartInst = null;
+
+/* ── Counter animation ───────────────────────────────── */
+function animCounter(el, target) {
+  if (!el) return;
+  const dur = 1200; const start = performance.now();
+  const update = (now) => {
+    const p = Math.min((now - start) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(e * target).toLocaleString('de-DE');
+    if (p < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+/* ── Online popover ──────────────────────────────────── */
+window.toggleOnlinePop = (e) => {
+  e.stopPropagation();
+  document.getElementById('onlinePop').classList.toggle('open');
+};
+document.addEventListener('click', () => document.getElementById('onlinePop')?.classList.remove('open'));
+
+/* ── Presence / Online tracking ──────────────────────── */
+function updateOnlineDisplay(members) {
+  // Deduplicate by user_id — same user can appear multiple times (multiple tabs / two channels)
+  const seen = new Set();
+  const unique = members.filter(m => {
+    const key = m.user_id || m.name;
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const count = unique.length;
+  document.getElementById('dashOnlineCount').textContent = count;
+  const list = document.getElementById('onlinePopList');
+  if (!list) return;
+  if (!count) { list.innerHTML = '<span style="font-size:12px;color:var(--muted)">Niemand online</span>'; return; }
+  list.innerHTML = unique.map(m => `
+    <div class="dash-online-member">
+      <div class="dash-online-av">${m.avatar_url ? `<img src="${escHtml(m.avatar_url)}" alt="">` : escHtml((m.name||'?')[0].toUpperCase())}</div>
+      <div>
+        <div class="dash-online-name">${escHtml(m.name || '—')}</div>
+        <div class="dash-online-role">${m.role === 'admin' ? 'Administrator' : 'Teammitglied'}</div>
+      </div>
+    </div>`).join('');
+}
+
+function setupPresenceDisplay() {
+  // Listen for custom events dispatched by proInitPresence in pro-layout.js
+  window.addEventListener('team-presence-update', (e) => {
+    updateOnlineDisplay(e.detail || []);
+  });
+
+  // Fallback polling — retry until channel has data
+  let attempts = 0;
+  const poll = setInterval(() => {
+    const ch = getPresenceChannel();
+    if (ch) {
+      const state = ch.presenceState();
+      const members = Object.values(state).flat();
+      if (members.length > 0 || attempts >= 8) {
+        updateOnlineDisplay(members);
+        if (members.length > 0) clearInterval(poll);
+      }
+    }
+    attempts++;
+    if (attempts > 12) clearInterval(poll);
+  }, 800);
+}
+
+/* ── Orders filter & render ──────────────────────────── */
+window.filterOrders = (status, btn) => {
+  document.querySelectorAll('.pro-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const f = status === 'alle' ? allOrders : allOrders.filter(o => o.status === status);
+  renderOrders(f);
+};
+
+function renderOrders(list) {
+  const tbody = document.getElementById('ordersTableBody');
+  const mobList = document.getElementById('ordersMobList');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Keine Aufträge gefunden.</td></tr>`;
+    mobList.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted)">Keine Aufträge</div>`;
+    return;
+  }
+  tbody.innerHTML = list.slice(0, 15).map(o => {
+    const name = o.client ? `${o.client.vorname} ${o.client.nachname}` : '—';
+    const init = o.client ? getInitials(o.client.vorname, o.client.nachname) : '?';
+    return `<tr>
+      <td><div class="pro-cust-cell">
+        <div class="pro-cust-av">${escHtml(init)}</div>
+        <div><span class="pro-cust-name">${escHtml(name)}</span><span class="pro-cust-id">${escHtml(o.order_number)}</span></div>
+      </div></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.service||'—')}</td>
+      <td>${fmtDate(o.created_at)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="dash-total">${o.preis_agreed ? '€ '+o.preis_agreed : '—'}</td>
+      <td><button class="pro-act pro-act-blue" onclick="openOrderPanel('${o.id}')">Details</button></td>
+    </tr>`;
+  }).join('');
+  mobList.innerHTML = list.slice(0, 10).map(o => {
+    const name = o.client ? `${o.client.vorname} ${o.client.nachname}` : '—';
+    const init = o.client ? getInitials(o.client.vorname, o.client.nachname) : '?';
+    return `<div class="dash-mob-row">
+      <div class="dash-mob-l">
+        <div class="pro-cust-av" style="width:44px;height:44px;font-size:14px">${escHtml(init)}</div>
+        <div><span class="pro-cust-name">${escHtml(name)}</span><span class="pro-cust-id">${escHtml(o.order_number)} · ${fmtDate(o.created_at)}</span></div>
+      </div>
+      <div class="dash-mob-r">
+        <span class="dash-total">${o.preis_agreed ? '€ '+o.preis_agreed : '—'}</span>
+        ${statusBadge(o.status)}
+        <button class="pro-act pro-act-blue" style="margin-top:4px" onclick="openOrderPanel('${o.id}')">Details</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q) { renderOrders(allOrders); return; }
+  renderOrders(allOrders.filter(o =>
+    (o.order_number||'').toLowerCase().includes(q) ||
+    (o.service||'').toLowerCase().includes(q) ||
+    (o.client?.vorname||'').toLowerCase().includes(q) ||
+    (o.client?.nachname||'').toLowerCase().includes(q)
+  ));
+});
+
+/* ── Order Detail Panel ──────────────────────────────── */
+async function openOrderPanel(orderId) {
+  document.getElementById('pro-panel').classList.add('open');
+  document.getElementById('pro-panel-overlay').classList.add('open');
+  document.getElementById('panel-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>';
+
+  const [order, messages, invoices] = await Promise.all([
+    DB.getOrder(orderId), DB.getOrderMessages(orderId), DB.getOrderInvoices(orderId)
+  ]);
+  if (!order) return;
+  document.getElementById('panel-title').textContent = order.order_number;
+
+  const ef = (field, label, value, type='text', opts=null, span2=false) => {
+    const dispVal = type==='date'&&value ? new Date(value).toLocaleDateString('de-DE') : (value||'—');
+    const valAttr = escHtml(value||'');
+    const optHtml = opts ? opts.map(o=>`<option value="${o}" ${value===o?'selected':''}>${o}</option>`).join('') : '';
+    const isStatus = field === 'status';
+    return `<div class="pro-detail-cell${span2?' span2':''}" id="dfc-${field}">
+      <label style="display:flex;align-items:center;justify-content:space-between">${label}
+        <button onclick="startEditField('${orderId}','${field}','${type}','${valAttr}')" style="background:none;border:none;cursor:pointer;color:var(--primary);font-size:12px;padding:0;opacity:.7">✏️</button>
+      </label>
+      <span id="dfv-${field}">${isStatus ? value : escHtml(dispVal)}</span>
+      <div id="dfe-${field}" style="display:none;margin-top:6px">
+        ${opts ? `<select id="dfi-${field}" class="pro-select" style="margin-bottom:6px">${optHtml}</select>` : type==='textarea' ? `<textarea id="dfi-${field}" class="pro-textarea" rows="3">${escHtml(value||'')}</textarea>` : `<input id="dfi-${field}" type="${type}" value="${valAttr}" class="pro-input"/>`}
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <button class="pro-btn pro-btn-primary pro-btn-sm" onclick="saveEditField('${orderId}','${field}','${type}')"><i class="fa-solid fa-check"></i> Speichern</button>
+          <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="cancelEditField('${field}')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  const invHtml = invoices.length ? invoices.map(inv => {
+    const sOpts = ['Ausstehend','Bezahlt','Überfällig'].map(s=>`<option value="${s}" ${inv.status===s?'selected':''}>${s}</option>`).join('');
+    const sc = {Ausstehend:'#D97706',Bezahlt:'#16A34A',Überfällig:'#DC2626'}[inv.status]||'#555';
+    const sb = {Ausstehend:'#FFFBEB',Bezahlt:'#DCFCE7',Überfällig:'#FEE2E2'}[inv.status]||'#F5F5F5';
+    return `<div class="pro-inv-item">
+      <div class="pro-inv-item-left">
+        <div class="pro-inv-num">${escHtml(inv.invoice_number)}</div>
+        <div class="pro-inv-meta">${new Date(inv.datum).toLocaleDateString('de-DE')} · ${escHtml(inv.betrag)}</div>
+      </div>
+      <select onchange="changeInvoiceStatus('${inv.id}','${orderId}',this.value)" style="font-size:12px;padding:5px 10px;border-radius:20px;font-weight:700;border:none;background:${sb};color:${sc};cursor:pointer">${sOpts}</select>
+    </div>`;
+  }).join('') : '<p style="color:var(--muted);font-size:13px">Noch keine Rechnungen.</p>';
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="pro-detail-grid">
+      ${ef('service','Service',order.service,'text')}
+      ${ef('status','Status',order.status,'select',['Neu','Aktiv','Abgeschlossen','Storniert'])}
+      <div class="pro-detail-cell"><label>Kunde</label><span>${order.client?escHtml(order.client.vorname+' '+order.client.nachname):'—'}</span></div>
+      <div class="pro-detail-cell"><label>Telefon</label><span>${escHtml(order.client?.telefon||'—')}</span></div>
+      <div class="pro-detail-cell"><label>E-Mail</label><span style="font-size:12px">${escHtml(order.client?.email||'—')}</span></div>
+      <div class="pro-detail-cell"><label>Adresse</label><span style="font-size:12px">${escHtml(order.client?.adresse||'—')}</span></div>
+      ${ef('adresse','Reinigungsort',order.adresse,'text')}
+      ${ef('datum','Termin',order.datum,'date')}
+      ${ef('flaeche','Fläche',order.flaeche,'text')}
+      ${ef('budget','Budget',order.budget,'text')}
+      ${ef('kommentar','Kommentar',order.kommentar,'textarea',null,true)}
+    </div>
+    <div class="pro-price-box">
+      <label>💰 Vereinbarter Preis</label>
+      ${order.preis_agreed?`<div class="pro-price-agreed">€ ${escHtml(order.preis_agreed)}</div><button class="pro-btn pro-btn-secondary pro-btn-sm" style="margin-top:10px" onclick="document.getElementById('price-input-area').style.display='block'">✏️ Ändern</button>`:''}
+      <div id="price-input-area" style="${order.preis_agreed?'display:none':''}">
+        <div class="pro-price-row">
+          <input type="number" id="price-input" class="pro-input" placeholder="z.B. 480" min="0" step="0.01" value="${order.preis_agreed||''}"/>
+          <button class="pro-btn pro-btn-primary pro-btn-sm" onclick="savePrice('${orderId}')">Preis setzen</button>
+        </div>
+      </div>
+    </div>
+    <div class="pro-section-title"><i class="fa-solid fa-file-invoice"></i> Rechnungen</div>
+    <div id="panel-invoices">${invHtml}</div>
+    <div class="pro-section-title"><i class="fa-solid fa-comments"></i> Nachrichten</div>
+    <div class="pro-chat-msgs" id="panel-chat-msgs">${renderPanelMsgs(messages)}</div>
+    <div class="pro-chat-input">
+      <input type="text" id="panel-msg-input" placeholder="Nachricht an Kunden…" onkeydown="if(event.key==='Enter')sendPanelMsg('${orderId}')"/>
+      <button class="pro-chat-send" onclick="sendPanelMsg('${orderId}')"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>`;
+
+  document.getElementById('panel-footer').innerHTML = `
+    <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="openInvoiceModal('${orderId}','${order.client_id||''}','${order.order_number}')"><i class="fa-solid fa-file-invoice"></i> Rechnung</button>
+    ${order.client?.telefon?`<a href="https://wa.me/${(order.client.telefon||'').replace(/\D/g,'')}" target="_blank" class="pro-btn pro-btn-wa pro-btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>`:''}
+    <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="closePanel()">Schließen</button>`;
+
+  Realtime.subscribeToOrderMessages(orderId, async () => {
+    const msgs = await DB.getOrderMessages(orderId);
+    const el = document.getElementById('panel-chat-msgs');
+    if (el) { el.innerHTML = renderPanelMsgs(msgs); el.scrollTop = el.scrollHeight; }
+  });
+  setTimeout(() => { const c = document.getElementById('panel-chat-msgs'); if (c) c.scrollTop = c.scrollHeight; }, 100);
+}
+
+function renderPanelMsgs(messages) {
+  if (!messages.length) return '<p style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Noch keine Nachrichten.</p>';
+  return messages.map(m => {
+    const isTeam = ['team','admin'].includes(m.sender_role);
+    const name = m.sender ? m.sender.vorname+' '+m.sender.nachname : (isTeam?'Team':'Kunde');
+    const time = new Date(m.created_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="pro-chat-msg ${isTeam?'me':'them'}">
+      ${!isTeam?`<div class="pro-chat-av">${escHtml((name[0]||'?'))}</div>`:''}
+      <div>${!isTeam?`<div class="pro-chat-sender">${escHtml(name)}</div>`:''}
+        <div class="pro-chat-bubble">${escHtml(m.message)}</div>
+        <div class="pro-chat-time">${time}</div>
+      </div>
+      ${isTeam?`<div class="pro-chat-av" style="background:var(--primary)">${escHtml((name[0]||'T'))}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function closePanel() { document.getElementById('pro-panel').classList.remove('open'); document.getElementById('pro-panel-overlay').classList.remove('open'); }
+function startEditField(o,f,t,v){document.getElementById('dfv-'+f).style.display='none';document.getElementById('dfe-'+f).style.display='block';const i=document.getElementById('dfi-'+f);if(i){if(t==='date'&&v)i.value=v.split('T')[0];else i.value=v==='—'?'':v;setTimeout(()=>i.focus(),50);}}
+function cancelEditField(f){document.getElementById('dfv-'+f).style.display='';document.getElementById('dfe-'+f).style.display='none';}
+async function saveEditField(oid,f,t){const i=document.getElementById('dfi-'+f);if(!i)return;const r=await DB.updateOrder(oid,{[f]:i.value.trim()||null});if(r.ok){proToast('Gespeichert','success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function savePrice(oid){const v=document.getElementById('price-input').value.trim();if(!v)return proToast('Bitte Preis eingeben','error');const fmt=parseFloat(v).toFixed(2).replace('.',',');const r=await DB.setOrderPrice(oid,fmt);if(r.ok){proToast(`Preis gesetzt: € ${fmt}`,'success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function sendPanelMsg(oid){const i=document.getElementById('panel-msg-input');const msg=i.value.trim();if(!msg)return;i.value='';await DB.sendOrderMessage(oid,msg);}
+async function changeInvoiceStatus(invId,oid,s){const r=await DB.updateInvoice(invId,{status:s});if(r.ok){proToast('Status: '+s,'success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+function openInvoiceModal(oid,cid,nr){document.getElementById('inv-order-id').value=oid;document.getElementById('inv-client-id').value=cid;document.getElementById('inv-order-number').value=nr||'';const d=new Date();d.setDate(d.getDate()+14);document.getElementById('inv-due').value=d.toISOString().split('T')[0];document.getElementById('invoice-modal').classList.add('open');}
+function closeInvoiceModal(){document.getElementById('invoice-modal').classList.remove('open');}
+async function submitInvoice(){const oid=document.getElementById('inv-order-id').value;const cid=document.getElementById('inv-client-id').value;const v=document.getElementById('inv-betrag').value;if(!v)return proToast('Betrag eingeben','error');const betrag='€ '+parseFloat(v).toFixed(2).replace('.',',');const r=await DB.createInvoice({orderId:oid,clientId:cid,betrag});if(r.ok){proToast(r.invoice.invoice_number+' erstellt','success');closeInvoiceModal();document.getElementById('inv-betrag').value='';}else proToast(r.msg,'error');}
+
+/* ── Bar Chart ───────────────────────────────────────── */
+async function buildBarChart() {
+  const [ordersByMonth, revenueByMonth] = await Promise.all([DB.getOrdersByMonth(), DB.getRevenueByMonth()]);
+  const labels = ordersByMonth.map(d => d.label);
+  const orderData = ordersByMonth.map(d => d.count);
+  const revMap = Object.fromEntries(revenueByMonth.map(d => [d.label, d.amount]));
+  const revData = labels.map(l => revMap[l] || 0);
+  const ctx = document.getElementById('barChart')?.getContext('2d');
+  if (!ctx) return;
+  if (barChartInst) barChartInst.destroy();
+  barChartInst = new Chart(ctx, {
+    type:'bar', data:{labels, datasets:[
+      {label:'Aufträge',data:orderData,backgroundColor:'rgba(21,101,192,.15)',borderColor:'rgba(21,101,192,.5)',borderWidth:1.5,borderRadius:6,borderSkipped:false,yAxisID:'y'},
+      {label:'Umsatz (€)',data:revData,backgroundColor:'rgba(0,188,212,.65)',borderColor:'rgba(0,188,212,.9)',borderWidth:0,borderRadius:6,borderSkipped:false,yAxisID:'y1'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#0A0E1A',titleColor:'#fff',bodyColor:'#c4c9d8',padding:12,cornerRadius:10,callbacks:{label:c=>` ${c.dataset.label}: ${c.dataset.label.includes('Umsatz')?'€ '+c.parsed.y.toLocaleString('de-DE'):c.parsed.y}`}}},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{font:{size:10},color:'#9ca3af',maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.04)'},border:{display:false},position:'left',ticks:{font:{size:10},color:'#9ca3af'}},y1:{grid:{display:false},border:{display:false},position:'right',ticks:{font:{size:10},color:'#0288D1',callback:v=>'€'+Math.round(v/1000)+'k'}}}}
+  });
+}
+
+/* ── Donut Chart ─────────────────────────────────────── */
+function buildDonutChart(neu, aktiv, done, cancel) {
+  const total = neu+aktiv+done+cancel;
+  document.getElementById('donutTotal').textContent = total;
+  document.getElementById('dn-neu').textContent = neu;
+  document.getElementById('dn-aktiv').textContent = aktiv;
+  document.getElementById('dn-done').textContent = done;
+  document.getElementById('dn-cancel').textContent = cancel;
+  if (total) {
+    document.getElementById('db-neu').style.width = (neu/total*100)+'%';
+    document.getElementById('db-aktiv').style.width = (aktiv/total*100)+'%';
+    document.getElementById('db-done').style.width = (done/total*100)+'%';
+    document.getElementById('db-cancel').style.width = (cancel/total*100)+'%';
+  }
+  const ctx = document.getElementById('donutChart')?.getContext('2d');
+  if (!ctx) return;
+  if (donutChartInst) donutChartInst.destroy();
+  donutChartInst = new Chart(ctx, {
+    type:'doughnut', data:{labels:['Neu','Aktiv','Abgeschlossen','Storniert'],datasets:[{data:[neu,aktiv,done,cancel],backgroundColor:['#1565C0','#22C55E','#8B5CF6','#EF4444'],borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'73%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#0A0E1A',titleColor:'#fff',bodyColor:'#c4c9d8',padding:10,cornerRadius:10,callbacks:{label:c=>` ${c.label}: ${c.parsed}`}}}}
+  });
+}
+
+/* ── Load data ───────────────────────────────────────── */
+async function loadData() {
+  const [{count:totalOrders},{count:activeOrders},{count:doneOrders},{count:cancelOrders},{count:neuOrders},{count:totalClients},{count:msgsCount}] = await Promise.all([
+    sb.from('orders').select('*',{count:'exact',head:true}),
+    sb.from('orders').select('*',{count:'exact',head:true}).eq('status','Aktiv'),
+    sb.from('orders').select('*',{count:'exact',head:true}).eq('status','Abgeschlossen'),
+    sb.from('orders').select('*',{count:'exact',head:true}).eq('status','Storniert'),
+    sb.from('orders').select('*',{count:'exact',head:true}).eq('status','Neu'),
+    sb.from('profiles').select('*',{count:'exact',head:true}).eq('role','client'),
+    sb.from('contact_messages').select('*',{count:'exact',head:true}).eq('status','Neu'),
+  ]);
+
+  animCounter(document.getElementById('kpi-orders'), totalOrders||0);
+  animCounter(document.getElementById('kpi-active'), activeOrders||0);
+  animCounter(document.getElementById('kpi-done'), doneOrders||0);
+  animCounter(document.getElementById('kpi-clients'), totalClients||0);
+  animCounter(document.getElementById('kpi-msgs'), msgsCount||0);
+
+  // Revenue (admin only)
+  if (currentProfile?.role === 'admin') {
+    const {data:inv} = await sb.from('invoices').select('betrag').eq('status','Bezahlt');
+    const revenue = (inv||[]).reduce((s,i)=>s+(parseFloat((i.betrag||'').replace(/[^0-9.,]/g,'').replace(',','.'))||0),0);
+    const revEl = document.getElementById('kpi-revenue');
+    if (revEl) revEl.textContent = '€ '+revenue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  }
+
+  // Badge sidebar
+  const newOrdersBadge = document.querySelector('.pro-new-orders-badge');
+  if (newOrdersBadge && (neuOrders||0) > 0) { newOrdersBadge.textContent = neuOrders; newOrdersBadge.style.display = 'flex'; }
+
+  buildDonutChart(neuOrders||0, activeOrders||0, doneOrders||0, cancelOrders||0);
+
+  const {data:orders} = await sb.from('orders')
+    .select(`*,client:profiles!orders_client_id_fkey(id,vorname,nachname,email,telefon,adresse)`)
+    .order('created_at',{ascending:false}).limit(20);
+  allOrders = orders||[];
+  renderOrders(allOrders);
+  buildBarChart();
+}
+
+/* ── INIT ────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('dashboard.html');
+  if (!auth) return;
+  currentUserId = auth.user.id;
+  currentProfile = auth.profile;
+
+  // Greeting
+  const h = new Date().getHours();
+  const greet = h<12 ? 'Guten Morgen' : h<17 ? 'Guten Tag' : 'Guten Abend';
+  const name = auth.profile.vorname;
+  const fullGreet = `${greet}, ${name} 👋`;
+  document.getElementById('dashGreeting').textContent = fullGreet;
+  document.getElementById('mobGreeting').textContent = fullGreet;
+
+  // Date
+  const dateStr = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('dashDate').textContent = dateStr;
+  document.getElementById('mobDate').textContent = dateStr;
+
+  await loadData();
+
+  // Presence display (after presence channel is ready)
+  setupPresenceDisplay();
+
+  // Realtime: refresh on new orders or messages
+  sb.channel('dash-updates')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'}, () => loadData())
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'contact_messages'}, () => loadData())
+    .subscribe();
+});
+</script>
+</body>
+</html>

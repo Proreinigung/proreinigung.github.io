@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Profil — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+.profil-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){.profil-layout{grid-template-columns:1fr}}
+
+/* Profile card left */
+.profil-card{background:#fff;border-radius:20px;padding:28px;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow)}
+.profil-av-wrap{position:relative;width:100px;height:100px;margin:0 auto 16px;cursor:pointer}
+.profil-av{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.2rem;font-weight:800;overflow:hidden;border:4px solid var(--bg)}
+.profil-av img{width:100%;height:100%;object-fit:cover}
+.profil-av-edit{position:absolute;bottom:2px;right:2px;width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;border:3px solid #fff;cursor:pointer;transition:.18s}
+.profil-av-edit:hover{background:var(--teal)}
+.profil-name{font-size:1.15rem;font-weight:800;color:var(--fg);margin-bottom:4px}
+.profil-role{font-size:.78rem;color:var(--muted);margin-bottom:10px}
+.profil-online{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:#16a34a;font-weight:600}
+.profil-stats{display:flex;justify-content:space-around;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+.profil-stat-item{text-align:center}
+.profil-stat-val{font-size:1.3rem;font-weight:800;color:var(--fg)}
+.profil-stat-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+
+/* Info tabs */
+.pro-info-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.pro-info-tab{padding:7px 16px;border-radius:24px;font-size:.8rem;font-weight:700;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:.18s;color:var(--muted)}
+.pro-info-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.pro-info-tab:hover:not(.active){background:var(--bg)}
+
+/* Log & msg items */
+.log-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--border);font-size:.82rem;margin-bottom:6px}
+.log-icon{font-size:1rem;min-width:22px}
+.msg-item{padding:10px 12px;border-radius:10px;background:#EFF6FF;border-left:3px solid var(--primary);font-size:.82rem;margin-bottom:6px}
+.msg-order-lbl{font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:3px}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+<input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title" id="page-title">Mein Profil</div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div id="profil-content">
+      <div style="text-align:center;padding:60px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item active"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px"><button class="pro-pwa-install">Installieren</button><button class="pro-pwa-close">✕</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let me = null;
+let currentUserId = null;
+let targetId = null;
+let targetProfile = null;
+let isAdminView = false;
+let activeInfoTab = 'edit';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('profil.html');
+  if (!auth) return;
+  me = auth.profile;
+  currentUserId = auth.user.id;
+
+  const uid = new URLSearchParams(window.location.search).get('id');
+  if (uid && uid !== me.id && me.role === 'admin') {
+    isAdminView = true;
+    targetId = uid;
+    document.getElementById('page-title').textContent = 'Mitarbeiter Profil';
+  } else {
+    targetId = me.id;
+  }
+  await loadProfil();
+});
+
+async function loadProfil() {
+  targetProfile = await DB.getProfileById(targetId);
+  if (!targetProfile) return;
+
+  let details = null;
+  if (isAdminView || me.role === 'admin') {
+    details = await DB.getMitarbeiterDetails(targetId);
+  }
+
+  const initials = ((targetProfile.vorname||'?')[0]+(targetProfile.nachname||'?')[0]).toUpperCase();
+  const ordersCount   = details?.orders?.length   || 0;
+  const messagesCount = details?.messages?.length  || 0;
+  const logins        = details?.logs?.filter(l=>l.action==='login').length || 0;
+
+  document.getElementById('profil-content').innerHTML = `
+    <div class="profil-layout">
+      <!-- LEFT -->
+      <div>
+        <div class="profil-card">
+          <div class="profil-av-wrap" onclick="${!isAdminView ? "document.getElementById('avatar-file').click()" : ''}">
+            <div class="profil-av" id="pa-av">
+              ${targetProfile.avatar_url ? `<img src="${targetProfile.avatar_url}" alt="">` : initials}
+            </div>
+            ${!isAdminView ? `<div class="profil-av-edit"><i class="fa-solid fa-camera"></i></div>` : ''}
+          </div>
+          <div class="profil-name">${escHtml(targetProfile.vorname)} ${escHtml(targetProfile.nachname)}</div>
+          <div class="profil-role">${targetProfile.role === 'admin' ? '🛡️ Administrator' : '👷 Mitarbeiter'}</div>
+          <div class="profil-online">
+            <span style="width:8px;height:8px;border-radius:50%;background:${targetProfile.is_online ? '#16a34a' : '#9ca3af'};display:inline-block"></span>
+            ${targetProfile.is_online ? 'Online' : 'Offline'}
+            ${targetProfile.last_seen ? `· ${new Date(targetProfile.last_seen).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}` : ''}
+          </div>
+          <div class="profil-stats">
+            <div class="profil-stat-item"><div class="profil-stat-val">${ordersCount}</div><div class="profil-stat-lbl">Aufträge</div></div>
+            <div class="profil-stat-item"><div class="profil-stat-val">${messagesCount}</div><div class="profil-stat-lbl">Nachrichten</div></div>
+            <div class="profil-stat-item"><div class="profil-stat-val">${logins}</div><div class="profil-stat-lbl">Logins</div></div>
+          </div>
+          ${isAdminView ? `
+          <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
+            ${targetProfile.role !== 'admin' ? `<button class="pro-btn pro-btn-outline" style="font-size:.8rem" onclick="changeRole('admin')"><i class="fa-solid fa-shield-halved"></i> Admin ernennen</button>` : ''}
+            ${targetProfile.role !== 'team'  ? `<button class="pro-btn pro-btn-outline" style="font-size:.8rem" onclick="changeRole('team')"><i class="fa-solid fa-user"></i> Mitarbeiter</button>` : ''}
+            <button class="pro-btn" style="font-size:.8rem;background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA" onclick="changeRole('client')"><i class="fa-solid fa-user-minus"></i> Aus Team entfernen</button>
+          </div>` : ''}
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div>
+        <div class="pro-info-tabs">
+          <button class="pro-info-tab active" id="itab-edit" onclick="showInfoTab('edit')"><i class="fa-solid fa-pen"></i> Daten</button>
+          ${!isAdminView ? `<button class="pro-info-tab" id="itab-pw" onclick="showInfoTab('pw')"><i class="fa-solid fa-lock"></i> Passwort</button>` : ''}
+          ${(isAdminView || me.role === 'admin') ? `
+          <button class="pro-info-tab" id="itab-activity" onclick="showInfoTab('activity')"><i class="fa-solid fa-clock-rotate-left"></i> Aktivität</button>
+          <button class="pro-info-tab" id="itab-orders" onclick="showInfoTab('orders')"><i class="fa-solid fa-clipboard-list"></i> Aufträge</button>
+          <button class="pro-info-tab" id="itab-messages" onclick="showInfoTab('messages')"><i class="fa-solid fa-comments"></i> Nachrichten</button>
+          ` : ''}
+        </div>
+
+        <!-- Edit tab -->
+        <div class="pro-card" id="tab-edit">
+          <div class="pro-card-hd"><h3>Persönliche Daten</h3></div>
+          <div class="pro-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="pro-form-group">
+              <label class="pro-label">Vorname</label>
+              <input type="text" id="ef-vn" class="pro-input" value="${escHtml(targetProfile.vorname||'')}">
+            </div>
+            <div class="pro-form-group">
+              <label class="pro-label">Nachname</label>
+              <input type="text" id="ef-nn" class="pro-input" value="${escHtml(targetProfile.nachname||'')}">
+            </div>
+            <div class="pro-form-group">
+              <label class="pro-label">Telefon</label>
+              <input type="text" id="ef-tel" class="pro-input" value="${escHtml(targetProfile.telefon||'')}">
+            </div>
+            <div class="pro-form-group">
+              <label class="pro-label">Adresse</label>
+              <input type="text" id="ef-adr" class="pro-input" value="${escHtml(targetProfile.adresse||'')}" placeholder="Straße, PLZ Stadt">
+            </div>
+            ${isAdminView ? `
+            <div class="pro-form-group" style="grid-column:span 2">
+              <label class="pro-label">Rolle</label>
+              <select id="ef-role" class="pro-input">
+                <option value="team"   ${targetProfile.role==='team'   ?'selected':''}>Mitarbeiter</option>
+                <option value="admin"  ${targetProfile.role==='admin'  ?'selected':''}>Administrator</option>
+                <option value="client" ${targetProfile.role==='client' ?'selected':''}>Kunde (aus Team entfernen)</option>
+              </select>
+            </div>` : ''}
+          </div>
+          <div style="margin-top:16px">
+            <button class="pro-btn" onclick="saveProfile()"><i class="fa-solid fa-floppy-disk"></i> Speichern</button>
+          </div>
+        </div>
+
+        <!-- Password tab -->
+        <div class="pro-card" id="tab-pw" style="display:none">
+          <div class="pro-card-hd"><h3>Passwort ändern</h3></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="pro-form-group">
+              <label class="pro-label">Neues Passwort</label>
+              <input type="password" id="pw-new" class="pro-input" placeholder="Mindestens 8 Zeichen">
+            </div>
+            <div class="pro-form-group">
+              <label class="pro-label">Passwort bestätigen</label>
+              <input type="password" id="pw-confirm" class="pro-input" placeholder="Wiederholen">
+            </div>
+            <button class="pro-btn" onclick="changePassword()"><i class="fa-solid fa-key"></i> Passwort ändern</button>
+            <div id="pw-msg" style="font-size:.84rem"></div>
+          </div>
+        </div>
+
+        <!-- Activity tab -->
+        <div class="pro-card" id="tab-activity" style="display:none">
+          <div class="pro-card-hd"><h3>Aktivitätsprotokoll</h3></div>
+          <div style="max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+            ${(details?.logs || []).map(l => {
+              const icons = { login:'🟢', logout:'🔴', create_order:'📋', update_order:'✏️', register:'👤' };
+              return `<div class="log-item">
+                <span class="log-icon">${icons[l.action]||'•'}</span>
+                <div style="flex:1;font-size:.82rem;color:var(--fg)">${escHtml(l.details || l.action)}</div>
+                <span style="font-size:.72rem;color:var(--muted);flex-shrink:0">${new Date(l.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+              </div>`;
+            }).join('') || `<p style="color:var(--muted);text-align:center;padding:20px">Keine Aktivitäten.</p>`}
+          </div>
+        </div>
+
+        <!-- Orders tab -->
+        <div class="pro-card" id="tab-orders" style="display:none">
+          <div class="pro-card-hd"><h3>Bearbeitete Aufträge</h3></div>
+          <div style="max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+            ${(details?.orders || []).map(o => `
+              <div class="log-item" style="gap:12px">
+                ${statusBadge(o.status)}
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:.82rem;color:var(--fg)">${escHtml(o.order_number)} · ${escHtml(o.service)}</div>
+                  <div style="font-size:.72rem;color:var(--muted)">${o.client ? escHtml(o.client.vorname+' '+o.client.nachname) : '—'} · ${o.datum ? new Date(o.datum).toLocaleDateString('de-DE') : '—'} ${o.preis_agreed ? '· €'+o.preis_agreed : ''}</div>
+                </div>
+                <a href="orders.html?order=${o.id}" class="pro-btn pro-btn-outline" style="font-size:.72rem;padding:4px 10px">Details</a>
+              </div>`).join('') || `<p style="color:var(--muted);text-align:center;padding:20px">Keine Aufträge.</p>`}
+          </div>
+        </div>
+
+        <!-- Messages tab -->
+        <div class="pro-card" id="tab-messages" style="display:none">
+          <div class="pro-card-hd"><h3>Nachrichten an Kunden</h3></div>
+          <div style="max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+            ${(details?.messages || []).map(m => `
+              <div class="msg-item">
+                <div class="msg-order-lbl">${escHtml(m.order?.order_number||'—')} · ${escHtml(m.order?.service||'—')}</div>
+                <div style="color:var(--fg)">${escHtml(m.message)}</div>
+                <div style="font-size:.7rem;color:var(--muted);margin-top:4px">${new Date(m.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+              </div>`).join('') || `<p style="color:var(--muted);text-align:center;padding:20px">Keine Nachrichten.</p>`}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showInfoTab(tab) {
+  ['edit','pw','activity','orders','messages'].forEach(t => {
+    const el  = document.getElementById('tab-' + t);
+    const btn = document.getElementById('itab-' + t);
+    if (el)  el.style.display  = t === tab ? '' : 'none';
+    if (btn) btn.className = 'pro-info-tab' + (t === tab ? ' active' : '');
+  });
+}
+
+async function saveProfile() {
+  const updates = {
+    vorname:  document.getElementById('ef-vn').value.trim(),
+    nachname: document.getElementById('ef-nn').value.trim(),
+    telefon:  document.getElementById('ef-tel').value.trim(),
+    adresse:  document.getElementById('ef-adr').value.trim(),
+  };
+  if (isAdminView) updates.role = document.getElementById('ef-role').value;
+  const res = await DB.updateProfileById(targetId, updates);
+  if (res.ok) {
+    proToast('Profil gespeichert.', 'success');
+    if (!isAdminView) me = { ...me, ...updates };
+    await loadProfil();
+  } else proToast(res.msg, 'error');
+}
+
+async function changePassword() {
+  const pw1 = document.getElementById('pw-new').value;
+  const pw2 = document.getElementById('pw-confirm').value;
+  const msg = document.getElementById('pw-msg');
+  if (!pw1 || pw1.length < 8) { msg.innerHTML = '<span style="color:#DC2626">Mindestens 8 Zeichen.</span>'; return; }
+  if (pw1 !== pw2)             { msg.innerHTML = '<span style="color:#DC2626">Passwörter stimmen nicht überein.</span>'; return; }
+  const { error } = await sb.auth.updateUser({ password: pw1 });
+  if (error) msg.innerHTML = `<span style="color:#DC2626">${escHtml(error.message)}</span>`;
+  else {
+    msg.innerHTML = '<span style="color:#16a34a">✓ Passwort wurde geändert.</span>';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+  }
+}
+
+async function changeRole(role) {
+  if (!confirm(`Rolle zu "${role}" ändern?`)) return;
+  const res = await DB.updateProfileById(targetId, { role });
+  if (res.ok) { proToast('Rolle geändert: ' + role, 'success'); await loadProfil(); }
+  else proToast(res.msg, 'error');
+}
+
+async function uploadAvatar(input) {
+  const file = input.files[0]; if (!file) return;
+  proToast('Wird hochgeladen…', 'info');
+  const ext  = file.name.split('.').pop();
+  const path = `${targetId}/avatar.${ext}`;
+  const { error } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+  if (error) { proToast(error.message, 'error'); return; }
+  const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
+  const url = publicUrl + `?t=${Date.now()}`;
+  await DB.updateProfileById(targetId, { avatar_url: url });
+  proToast('Profilbild aktualisiert.', 'success');
+  await loadProfil();
+  input.value = '';
+}
+
+function statusBadge(s) {
+  const map = { Neu:'pb-neu', Aktiv:'pb-aktiv', Abgeschlossen:'pb-done', Storniert:'pb-cancel', Ausstehend:'pb-ausstehend' };
+  return `<span class="pro-badge ${map[s]||'pb-info'}">${escHtml(s||'—')}</span>`;
+}
+
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Aufträge — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+.guest-row td:first-child::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#F59E0B;margin-right:6px}
+.guest-tag{display:inline-block;font-size:10px;font-weight:800;background:#FEF3C7;color:#D97706;border-radius:20px;padding:1px 7px;margin-left:4px;vertical-align:middle}
+.guest-row{background:rgba(245,158,11,.04)!important}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge<span class="pro-sb-badge pro-new-orders-badge" style="display:none">0</span></a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten<span class="pro-sb-badge pro-contact-count" style="display:none">0</span></a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Aufträge</div>
+      <div class="pro-topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Auftrag, Kunde, Service…" id="searchInput" oninput="filterTable()"/>
+      </div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div class="pro-mob-title"><h1>Aufträge</h1><p id="orders-count">Wird geladen…</p></div>
+
+    <div class="pro-card">
+      <div class="pro-card-hd">
+        <h3>Alle Aufträge <span id="orders-count-desk" style="font-size:13px;color:var(--muted);font-weight:500"></span></h3>
+        <div class="pro-filter-bar">
+          <select id="filter-status" onchange="loadOrders()">
+            <option value="">Alle Status</option>
+            <option value="Neu">Neu</option>
+            <option value="Aktiv">Aktiv</option>
+            <option value="Abgeschlossen">Abgeschlossen</option>
+            <option value="Storniert">Storniert</option>
+          </select>
+          <input type="text" id="filter-search" placeholder="Suchen…" oninput="filterTable()" style="width:200px"/>
+          <select id="filter-mitarbeiter" onchange="filterTable()" style="min-width:160px">
+            <option value="">Alle Mitarbeiter</option>
+            <option value="__unassigned__">⚠️ Nicht zugewiesen</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Status tabs -->
+      <div class="pro-tabs-wrap">
+        <div class="pro-tabs">
+          <button class="pro-tab active" onclick="setTab('alle',this)">Alle</button>
+          <button class="pro-tab" onclick="setTab('Neu',this)">Neu</button>
+          <button class="pro-tab" onclick="setTab('Aktiv',this)">Aktiv</button>
+          <button class="pro-tab" onclick="setTab('Abgeschlossen',this)">Abgeschlossen</button>
+          <button class="pro-tab" onclick="setTab('Storniert',this)">Storniert</button>
+        </div>
+      </div>
+
+      <!-- Desktop table -->
+      <div class="pro-table-wrap">
+        <table class="pro-table">
+          <thead>
+            <tr>
+              <th>Nr.</th><th>Kunde</th><th>Service</th><th>Adresse</th>
+              <th>Termin</th><th>Status</th><th>Zugewiesen</th><th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:50px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="pro-mob-list" id="orders-mob-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="pro-bot-nav">
+  <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+  <a href="orders.html" class="pro-bot-item active"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+  <a href="chat.html" class="pro-bot-fab-wrap pro-bot-item"><div class="pro-bot-fab"><i class="fa-solid fa-comments"></i></div></a>
+  <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span><span class="pro-bot-badge pro-contact-count" style="display:none">0</span></a>
+  <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+</nav>
+
+<!-- Side Panel -->
+<div class="pro-panel-overlay" id="pro-panel-overlay" onclick="closePanel()"></div>
+<div class="pro-panel" id="pro-panel">
+  <div class="pro-panel-hd">
+    <h3 id="panel-title">Auftragsdetails</h3>
+    <button class="pro-panel-close" onclick="closePanel()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="pro-panel-body" id="panel-body"><p style="color:var(--muted)">Laden…</p></div>
+  <div class="pro-panel-footer" id="panel-footer"></div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="pro-modal" id="invoice-modal">
+  <div class="pro-modal-box">
+    <h3><i class="fa-solid fa-file-invoice" style="color:var(--primary)"></i> Rechnung erstellen</h3>
+    <p>Die Rechnung wird automatisch dem Kunden angezeigt.</p>
+    <input type="hidden" id="inv-order-id"/><input type="hidden" id="inv-client-id"/><input type="hidden" id="inv-order-number"/>
+    <div class="pro-form-group">
+      <label>Betrag (€) *</label>
+      <input type="number" id="inv-betrag" class="pro-input" placeholder="z.B. 480" step="0.01" min="0"/>
+    </div>
+    <div class="pro-form-group">
+      <label>Fälligkeitsdatum</label>
+      <input type="date" id="inv-due" class="pro-input"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="pro-btn pro-btn-primary" onclick="submitInvoice()"><i class="fa-solid fa-file-invoice"></i> Erstellen</button>
+      <button class="pro-btn pro-btn-secondary" onclick="closeInvoiceModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div class="pro-pwa-ic"><i class="fa-solid fa-broom"></i></div>
+  <div class="pro-pwa-txt"><strong>App installieren</strong><span>Zum Startbildschirm hinzufügen</span></div>
+  <button class="pro-pwa-install">Installieren</button>
+  <button class="pro-pwa-close"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let currentProfile = null;
+let currentUserId = null;
+let allOrders = [];
+let activeTab = 'alle';
+let allTeamMembers = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('orders.html');
+  if (!auth) return;
+  currentProfile = auth.profile;
+  currentUserId = auth.user.id;
+
+  // Pre-set status filter from URL params (e.g. from dashboard KPI click)
+  const urlParams = new URLSearchParams(location.search);
+  const urlStatus = urlParams.get('status');
+  if (urlStatus) {
+    const statusSel = document.getElementById('filter-status');
+    if (statusSel) statusSel.value = urlStatus;
+    // Also set the tab
+    activeTab = urlStatus;
+    document.querySelectorAll('.pro-tab').forEach(b => {
+      b.classList.toggle('active', b.textContent.trim() === urlStatus || (urlStatus === '' && b.textContent.trim() === 'Alle'));
+    });
+  }
+
+  await loadOrders();
+  await loadMitarbeiterFilter();
+
+  // Open from URL (support both ?id= and ?order= params)
+  const id = urlParams.get('id') || urlParams.get('order');
+  if (id) openOrderPanel(id);
+
+  // Realtime
+  Realtime.subscribeToOrders(async (payload) => {
+    if (payload.eventType === 'INSERT') { proPlaySound(); proToast('🔔 Neue Bestellung: ' + payload.new.service, 'info'); }
+    await loadOrders();
+  });
+  sb.channel('guest_watch').on('postgres_changes',{event:'INSERT',schema:'public',table:'guest_requests'}, async (p) => {
+    proPlaySound(); proToast('📩 Neue Gastanfrage: ' + p.new.service, 'info'); await loadOrders();
+  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'guest_requests'}, async () => await loadOrders()).subscribe();
+});
+
+async function loadMitarbeiterFilter() {
+  allTeamMembers = await DB.getTeamMembers();
+  const sel = document.getElementById('filter-mitarbeiter');
+  if (!sel || !allTeamMembers.length) return;
+  // Keep first two options (All + Unassigned), replace rest
+  while (sel.options.length > 2) sel.remove(2);
+  allTeamMembers.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = `${m.vorname} ${m.nachname}`;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadOrders() {
+  const statusFilter = document.getElementById('filter-status').value;
+  const [orders, guestReqs] = await Promise.all([
+    DB.getOrders(statusFilter ? { status: statusFilter } : {}),
+    DB.getGuestRequests()
+  ]);
+  const statusMap = { 'Neu':'Neu','Bearbeitung':'Aktiv','Erledigt':'Abgeschlossen','Abgelehnt':'Storniert' };
+  const guests = guestReqs.filter(g => !statusFilter || statusMap[g.status]===statusFilter || g.status===statusFilter).map(g => ({
+    _isGuest:true, id:g.id, order_number:'📩 GAST', service:g.service,
+    adresse:g.adresse||'—', datum:g.datum, status:statusMap[g.status]||g.status,
+    _guestStatus:g.status, _raw:g,
+    client:{ vorname:g.name?.split(' ')[0]||'', nachname:g.name?.split(' ').slice(1).join(' ')||'', email:g.email, telefon:g.telefon },
+    assigned:null
+  }));
+  allOrders = [...guests,...orders].sort((a,b)=>new Date(b._raw?.created_at||b.created_at)-new Date(a._raw?.created_at||a.created_at));
+
+  // Badge
+  const neuCount = allOrders.filter(o=>o.status==='Neu').length;
+  document.querySelectorAll('.pro-new-orders-badge').forEach(el=>{
+    if(neuCount>0){el.textContent=neuCount;el.style.display='flex';}else el.style.display='none';
+  });
+
+  applyTabFilter();
+}
+
+function setTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.pro-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyTabFilter();
+}
+
+function applyTabFilter() {
+  filterTable();
+}
+
+function filterTable() {
+  // Use either the topbar search or the filter bar search (whichever has input)
+  const q1 = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+  const q2 = (document.getElementById('filter-search')?.value || '').toLowerCase().trim();
+  const q = q1 || q2;
+  // Sync both inputs
+  if (q1 && document.getElementById('filter-search')) document.getElementById('filter-search').value = q1;
+  if (q2 && !q1 && document.getElementById('searchInput')) document.getElementById('searchInput').value = q2;
+
+  // Mitarbeiter filter
+  const mitFilter = document.getElementById('filter-mitarbeiter')?.value || '';
+  let base = activeTab==='alle' ? allOrders : allOrders.filter(o=>o.status===activeTab);
+  if (mitFilter === '__unassigned__') {
+    base = base.filter(o => !o.assigned && !o._isGuest);
+  } else if (mitFilter) {
+    base = base.filter(o => o.assigned?.id === mitFilter);
+  }
+
+  if (!q) { renderTable(base); return; }
+  renderTable(base.filter(o =>
+    (o.order_number||'').toLowerCase().includes(q) ||
+    (o.service||'').toLowerCase().includes(q) ||
+    (o.client?.vorname||'').toLowerCase().includes(q) ||
+    (o.client?.nachname||'').toLowerCase().includes(q) ||
+    (o.adresse||'').toLowerCase().includes(q) ||
+    (o.assigned?.vorname||'').toLowerCase().includes(q) ||
+    (o.assigned?.nachname||'').toLowerCase().includes(q)
+  ));
+}
+
+function renderTable(orders) {
+  const count = `${orders.length} Einträge`;
+  document.getElementById('orders-count').textContent = count;
+  document.getElementById('orders-count-desk').textContent = count;
+
+  const tbody = document.getElementById('orders-tbody');
+  const mobList = document.getElementById('orders-mob-list');
+
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="pro-empty"><i class="fa-solid fa-clipboard-list"></i><h4>Keine Aufträge gefunden</h4></div></td></tr>`;
+    mobList.innerHTML = `<div class="pro-empty"><i class="fa-solid fa-clipboard-list"></i><h4>Keine Aufträge</h4></div>`;
+    return;
+  }
+
+  tbody.innerHTML = orders.map(o => {
+    const isGuest = !!o._isGuest;
+    const cname = o.client ? `${escHtml(o.client.vorname)} ${escHtml(o.client.nachname)}` : '—';
+    const init = o.client ? getInitials(o.client.vorname,o.client.nachname) : '?';
+    return `<tr${isGuest ? ' class="guest-row"' : ''}>
+      <td><strong style="color:var(--primary);font-size:12px">${o.order_number}</strong>${isGuest?`<span class="guest-tag">GAST</span>`:''}</td>
+      <td><div class="pro-cust-cell">
+        <div class="pro-cust-av">${init}</div>
+        <div><span class="pro-cust-name">${cname}</span><span class="pro-cust-id">${escHtml(o.client?.email||'')}</span></div>
+      </div></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(o.service||'—')}</td>
+      <td style="font-size:12px;color:var(--muted)">${escHtml(o.adresse||'—')}</td>
+      <td style="font-size:12px">${o.datum ? new Date(o.datum).toLocaleDateString('de-DE') : '—'}</td>
+      <td>${statusBadge(isGuest ? (o._guestStatus||o.status) : o.status)}</td>
+      <td style="font-size:12px">${o.assigned ? escHtml(o.assigned.vorname+' '+o.assigned.nachname) : '<span style="color:var(--muted);font-style:italic">—</span>'}</td>
+      <td>
+        <div class="pro-action-btns">
+          <button class="pro-act pro-act-blue" onclick="${isGuest?`openGuestPanel('${o.id}')`:`openOrderPanel('${o.id}')`}">Details</button>
+          ${!isGuest && o.status==='Neu' ? `<button class="pro-act pro-act-yellow" onclick="assignSelf('${o.id}')">Übernehmen</button>` : ''}
+          ${!isGuest && o.status==='Aktiv' ? `<button class="pro-act pro-act-green" onclick="completeOrder('${o.id}')">Abschließen</button>` : ''}
+          ${!isGuest && !['Storniert','Abgeschlossen'].includes(o.status) ? `<button class="pro-act pro-act-red" onclick="cancelOrder('${o.id}')">Stornieren</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  mobList.innerHTML = orders.map(o => {
+    const isGuest = !!o._isGuest;
+    const cname = o.client ? `${o.client.vorname} ${o.client.nachname}` : '—';
+    const init = o.client ? getInitials(o.client.vorname,o.client.nachname) : '?';
+    return `<div class="pro-mob-card">
+      <div class="pro-mob-card-l">
+        <div class="pro-cust-av" style="width:44px;height:44px;font-size:14px">${init}</div>
+        <div><span class="pro-cust-name">${escHtml(cname)}${isGuest?`<span class="guest-tag">GAST</span>`:''}</span><span class="pro-cust-id">${o.order_number} · ${o.datum?new Date(o.datum).toLocaleDateString('de-DE'):'—'}</span></div>
+      </div>
+      <div class="pro-mob-card-r">
+        ${statusBadge(isGuest?o._guestStatus:o.status)}
+        <button class="pro-act pro-act-blue" style="margin-top:4px" onclick="${isGuest?`openGuestPanel('${o.id}')`:`openOrderPanel('${o.id}')`}">Details</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function getInitials(v,n){return ((v||'')[0]+(n||'')[0]).toUpperCase()||'?'}
+function statusBadge(s){const m={Neu:'pb-neu',Ausstehend:'pb-ausstehend',Aktiv:'pb-aktiv',Bearbeitung:'pb-bearbeitung',Abgeschlossen:'pb-done',Erledigt:'pb-done',Bezahlt:'pb-done',Storniert:'pb-cancel',Abgelehnt:'pb-abgelehnt'};return `<span class="pro-badge ${m[s]||'pb-info'}">${escHtml(s||'—')}</span>`;}
+
+async function openOrderPanel(orderId) {
+  document.getElementById('pro-panel').classList.add('open');
+  document.getElementById('pro-panel-overlay').classList.add('open');
+  document.getElementById('panel-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>';
+  const [order,messages,invoices]=await Promise.all([DB.getOrder(orderId),DB.getOrderMessages(orderId),DB.getOrderInvoices(orderId)]);
+  if (!order) return;
+  document.getElementById('panel-title').textContent = order.order_number;
+  const ef=(field,label,value,type='text',opts=null,span2=false)=>{
+    const dispVal=type==='date'&&value?new Date(value).toLocaleDateString('de-DE'):(value||'—');
+    const isStatus=field==='status';
+    const valAttr=escHtml(value||'');
+    const optHtml=opts?opts.map(o=>`<option value="${o}" ${value===o?'selected':''}>${o}</option>`).join(''):'';
+    return `<div class="pro-detail-cell${span2?' span2':''}" id="dfc-${field}">
+      <label style="display:flex;align-items:center;justify-content:space-between">${label}
+        <button onclick="startEditField('${orderId}','${field}','${type}','${valAttr}')" style="background:none;border:none;cursor:pointer;color:var(--primary);font-size:12px;padding:0;opacity:.7">✏️</button>
+      </label>
+      <span id="dfv-${field}" class="${isStatus?'pro-badge '+(statusBadge(value).match(/pro-badge [a-z-]+/)?.[0]?.replace('pro-badge ','')||''):''}">${isStatus?value:escHtml(dispVal)}</span>
+      <div id="dfe-${field}" style="display:none;margin-top:6px">
+        ${opts?`<select id="dfi-${field}" class="pro-select" style="margin-bottom:6px">${optHtml}</select>`:type==='textarea'?`<textarea id="dfi-${field}" class="pro-textarea" rows="3">${escHtml(value||'')}</textarea>`:`<input id="dfi-${field}" type="${type}" value="${valAttr}" class="pro-input"/>`}
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <button class="pro-btn pro-btn-primary pro-btn-sm" onclick="saveEditField('${orderId}','${field}','${type}')"><i class="fa-solid fa-check"></i> Speichern</button>
+          <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="cancelEditField('${field}')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+    </div>`;
+  };
+  const invHtml=invoices.length?invoices.map(inv=>{
+    const sOpts=['Ausstehend','Bezahlt','Überfällig'].map(s=>`<option value="${s}" ${inv.status===s?'selected':''}>${s}</option>`).join('');
+    const sc={Ausstehend:'#D97706',Bezahlt:'#16A34A',Überfällig:'#DC2626'}[inv.status]||'#555';
+    const sb={Ausstehend:'#FFFBEB',Bezahlt:'#DCFCE7',Überfällig:'#FEE2E2'}[inv.status]||'#F5F5F5';
+    return `<div class="pro-inv-item">
+      <div class="pro-inv-item-left">
+        <div class="pro-inv-num">${escHtml(inv.invoice_number)}</div>
+        <div class="pro-inv-meta">${new Date(inv.datum).toLocaleDateString('de-DE')} · ${escHtml(inv.betrag)}</div>
+      </div>
+      <select onchange="changeInvoiceStatus('${inv.id}','${orderId}',this.value)" style="font-size:12px;padding:5px 10px;border-radius:20px;font-weight:700;border:none;background:${sb};color:${sc};cursor:pointer">${sOpts}</select>
+      <button onclick="previewInvoicePDF(${JSON.stringify({id:inv.id,invoice_number:inv.invoice_number,betrag:inv.betrag,datum:inv.datum,status:inv.status}).replace(/"/g,'&quot;')},'${escHtml((order.client?.vorname||'')+' '+(order.client?.nachname||''))}')" style="background:none;border:none;cursor:pointer;font-size:1rem" title="PDF">📄</button>
+    </div>`;
+  }).join(''):'<p style="color:var(--muted);font-size:13px">Noch keine Rechnungen.</p>';
+
+  document.getElementById('panel-body').innerHTML=`
+    <div class="pro-detail-grid">
+      ${ef('service','Service',order.service,'text')}
+      ${ef('status','Status',order.status,'select',['Neu','Aktiv','Abgeschlossen','Storniert'])}
+      <div class="pro-detail-cell"><label>Kunde</label><span>${order.client?escHtml(order.client.vorname+' '+order.client.nachname):'—'}</span></div>
+      <div class="pro-detail-cell"><label>Telefon</label><span>${escHtml(order.client?.telefon||'—')}</span></div>
+      <div class="pro-detail-cell"><label>E-Mail</label><span style="font-size:12px">${escHtml(order.client?.email||'—')}</span></div>
+      <div class="pro-detail-cell"><label>Adresse Kunde</label><span style="font-size:12px">${escHtml(order.client?.adresse||'—')}</span></div>
+      ${ef('adresse','Reinigungsort',order.adresse,'text')}
+      ${ef('datum','Termin',order.datum,'date')}
+      ${ef('flaeche','Fläche',order.flaeche,'text')}
+      ${ef('budget','Budget',order.budget,'text')}
+      ${ef('kommentar','Kommentar',order.kommentar,'textarea',null,true)}
+    </div>
+
+    <div class="pro-section-title"><i class="fa-solid fa-user-check"></i> Zugewiesen an</div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+      ${order.assigned
+        ? `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${getInitials(order.assigned.vorname,order.assigned.nachname)}</div>
+            <div><div style="font-weight:700;font-size:13px">${escHtml(order.assigned.vorname+' '+order.assigned.nachname)}</div><div style="font-size:11px;color:var(--muted)">Zugewiesen</div></div>
+          </div>`
+        : `<div style="font-size:13px;color:#D97706;font-weight:600;margin-bottom:10px">⚠️ Noch nicht zugewiesen</div>`
+      }
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="assign-select" class="pro-select" style="flex:1;min-width:160px">
+          <option value="">— Mitarbeiter wählen —</option>
+          ${allTeamMembers.map(m=>`<option value="${m.id}" ${order.assigned?.id===m.id?'selected':''}>${escHtml(m.vorname+' '+m.nachname)}</option>`).join('')}
+        </select>
+        <button class="pro-btn pro-btn-primary pro-btn-sm" onclick="saveAssignment('${orderId}')"><i class="fa-solid fa-user-check"></i> Zuweisen</button>
+        ${!order.assigned || order.assigned.id !== currentUserId
+          ? `<button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="claimOrder('${orderId}')"><i class="fa-solid fa-hand"></i> Übernehmen</button>`
+          : ''}
+        ${order.assigned
+          ? `<button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="removeAssignment('${orderId}')" style="color:var(--error)"><i class="fa-solid fa-user-xmark"></i> Entfernen</button>`
+          : ''}
+      </div>
+    </div>
+
+    <div class="pro-price-box">
+      <label>💰 Vereinbarter Preis</label>
+      ${order.preis_agreed?`<div class="pro-price-agreed">€ ${escHtml(order.preis_agreed)}</div><button class="pro-btn pro-btn-secondary pro-btn-sm" style="margin-top:10px" onclick="document.getElementById('price-input-area').style.display='block'">✏️ Ändern</button>`:''}
+      <div id="price-input-area" style="${order.preis_agreed?'display:none':''}">
+        <div class="pro-price-row">
+          <input type="number" id="price-input" class="pro-input" placeholder="z.B. 480" min="0" step="0.01" value="${order.preis_agreed||''}"/>
+          <button class="pro-btn pro-btn-primary pro-btn-sm" onclick="savePrice('${orderId}')">Preis setzen</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:6px">Kunde wird automatisch benachrichtigt.</p>
+      </div>
+    </div>
+
+    <div class="pro-section-title"><i class="fa-solid fa-file-invoice"></i> Rechnungen</div>
+    <div id="panel-invoices">${invHtml}</div>
+
+    <div class="pro-section-title"><i class="fa-solid fa-comments"></i> Nachrichten</div>
+    <div class="pro-chat-msgs" id="panel-chat-msgs">${renderPanelMsgs(messages)}</div>
+    <div class="pro-chat-input">
+      <input type="text" id="panel-msg-input" placeholder="Nachricht an Kunden…" onkeydown="if(event.key==='Enter')sendPanelMsg('${orderId}')"/>
+      <button class="pro-chat-send" onclick="sendPanelMsg('${orderId}')"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>`;
+
+  document.getElementById('panel-footer').innerHTML=`
+    <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="openInvoiceModal('${orderId}','${order.client_id||''}','${order.order_number}')"><i class="fa-solid fa-file-invoice"></i> Rechnung</button>
+    ${order.client?.telefon?`<a href="https://wa.me/${(order.client.telefon||'').replace(/\D/g,'')}" target="_blank" class="pro-btn pro-btn-wa pro-btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>`:''}
+    <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="closePanel()">Schließen</button>`;
+
+  Realtime.subscribeToOrderMessages(orderId, async()=>{
+    const msgs=await DB.getOrderMessages(orderId);
+    const el=document.getElementById('panel-chat-msgs');
+    if(el){el.innerHTML=renderPanelMsgs(msgs);el.scrollTop=el.scrollHeight;}
+  });
+  setTimeout(()=>{const c=document.getElementById('panel-chat-msgs');if(c)c.scrollTop=c.scrollHeight;},100);
+}
+
+function renderPanelMsgs(messages){
+  if(!messages.length) return '<p style="color:var(--muted);font-size:13px;text-align:center;padding:16px">Noch keine Nachrichten.</p>';
+  return messages.map(m=>{
+    const isTeam=['team','admin'].includes(m.sender_role);
+    const name=m.sender?m.sender.vorname+' '+m.sender.nachname:(isTeam?'Team':'Kunde');
+    const time=new Date(m.created_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="pro-chat-msg ${isTeam?'me':'them'}">
+      ${!isTeam?`<div class="pro-chat-av">${name[0]||'?'}</div>`:''}
+      <div>
+        ${!isTeam?`<div class="pro-chat-sender">${escHtml(name)}</div>`:''}
+        <div class="pro-chat-bubble">${escHtml(m.message)}</div>
+        <div class="pro-chat-time">${time}</div>
+      </div>
+      ${isTeam?`<div class="pro-chat-av" style="background:var(--primary)">${name[0]||'T'}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function closePanel(){document.getElementById('pro-panel').classList.remove('open');document.getElementById('pro-panel-overlay').classList.remove('open');}
+
+function startEditField(o,f,t,v){document.getElementById('dfv-'+f).style.display='none';document.getElementById('dfe-'+f).style.display='block';const i=document.getElementById('dfi-'+f);if(i){if(t==='date'&&v)i.value=v.split('T')[0];else i.value=v==='—'?'':v;setTimeout(()=>i.focus(),50);}}
+function cancelEditField(f){document.getElementById('dfv-'+f).style.display='';document.getElementById('dfe-'+f).style.display='none';}
+async function saveEditField(oid,f,t){const i=document.getElementById('dfi-'+f);if(!i)return;const r=await DB.updateOrder(oid,{[f]:i.value.trim()||null});if(r.ok){proToast('Gespeichert','success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+
+async function savePrice(oid){const v=document.getElementById('price-input').value.trim();if(!v)return proToast('Bitte Preis eingeben','error');const fmt=parseFloat(v).toFixed(2).replace('.',',');const r=await DB.setOrderPrice(oid,fmt);if(r.ok){proToast(`Preis gesetzt: € ${fmt}`,'success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+
+async function sendPanelMsg(oid){const i=document.getElementById('panel-msg-input');const msg=i.value.trim();if(!msg)return;i.value='';await DB.sendOrderMessage(oid,msg);}
+
+async function changeInvoiceStatus(invId,oid,s){const r=await DB.updateInvoice(invId,{status:s});if(r.ok){proToast('Status: '+s,'success');openOrderPanel(oid);}else proToast(r.msg,'error');}
+
+async function previewInvoicePDF(inv,cname){
+  if(typeof inv==='string')try{inv=JSON.parse(inv.replace(/&quot;/g,'"'));}catch(e){return;}
+  const date=new Date(inv.datum).toLocaleDateString('de-DE');
+  const sc={Ausstehend:'#D97706',Bezahlt:'#16A34A',Überfällig:'#DC2626'}[inv.status]||'#555';
+  const sb={Ausstehend:'#FFFBEB',Bezahlt:'#DCFCE7',Überfällig:'#FEE2E2'}[inv.status]||'#F5F5F5';
+
+  // Load jsPDF dynamically if not already loaded
+  if(!window.jspdf){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    document.head.appendChild(s);
+    await new Promise(r=>{s.onload=r;s.onerror=()=>r();});
+  }
+
+  if(window.jspdf && window.jspdf.jsPDF){
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF();
+    const w=doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFontSize(22);doc.setTextColor(21,101,192);doc.setFont(undefined,'bold');
+    doc.text('PROREINIGUNG',14,25);
+    doc.setFontSize(9);doc.setTextColor(136);doc.setFont(undefined,'normal');
+    doc.text('Professionelle Reinigungsdienstleistungen',14,32);
+
+    // Status badge
+    doc.setFontSize(10);doc.setFont(undefined,'bold');doc.setTextColor(sc);
+    doc.text(inv.status||'',w-14,25,{align:'right'});
+
+    // Line
+    doc.setDrawColor(230);doc.line(14,38,w-14,38);
+
+    // Title
+    doc.setFontSize(20);doc.setTextColor(26,32,53);doc.setFont(undefined,'bold');
+    doc.text('Rechnung',14,52);
+
+    // Meta grid
+    doc.setFontSize(8);doc.setTextColor(102);doc.setFont(undefined,'bold');
+    doc.text('RECHNUNGSNUMMER',14,66);doc.text('DATUM',w/2+5,66);
+    doc.setFontSize(11);doc.setTextColor(26,32,53);doc.setFont(undefined,'normal');
+    doc.text(inv.invoice_number||'—',14,73);doc.text(date,w/2+5,73);
+
+    doc.setFontSize(8);doc.setTextColor(102);doc.setFont(undefined,'bold');
+    doc.text('KUNDE',14,84);doc.text('BETRAG',w/2+5,84);
+    doc.setFontSize(11);doc.setTextColor(26,32,53);doc.setFont(undefined,'normal');
+    doc.text(cname||'—',14,91);doc.text(inv.betrag||'—',w/2+5,91);
+
+    // Amount box
+    doc.setFillColor(240,247,255);doc.roundedRect(14,104,w-28,40,4,4,'F');
+    doc.setDrawColor(179,217,255);doc.roundedRect(14,104,w-28,40,4,4,'S');
+    doc.setFontSize(8);doc.setTextColor(102);doc.setFont(undefined,'bold');
+    doc.text('GESAMTBETRAG',w/2,114,{align:'center'});
+    doc.setFontSize(24);doc.setTextColor(21,101,192);doc.setFont(undefined,'bold');
+    doc.text(inv.betrag||'—',w/2,130,{align:'center'});
+    doc.setFontSize(8);doc.setTextColor(136);doc.setFont(undefined,'normal');
+    doc.text('inkl. MwSt.',w/2,138,{align:'center'});
+
+    // Footer
+    doc.setDrawColor(230);doc.line(14,260,w-14,260);
+    doc.setFontSize(8);doc.setTextColor(136);
+    doc.text('Proreinigung · info@proreinigung.de',w/2,268,{align:'center'});
+
+    // Download as file
+    doc.save(`Rechnung_${(inv.invoice_number||'').replace(/[^a-zA-Z0-9-]/g,'_')}.pdf`);
+    proToast('PDF heruntergeladen','success');
+  } else {
+    // Fallback: open in new window for save
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rechnung ${escHtml(inv.invoice_number)}</title><style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;color:#1A2035;padding:0 20px}@media print{.no-print{display:none}}</style></head><body>
+    <div style="display:flex;justify-content:space-between;margin-bottom:40px"><div><div style="font-size:1.4rem;font-weight:900;color:#1565C0">PROREINIGUNG</div></div><span style="padding:5px 14px;border-radius:999px;font-size:.8rem;font-weight:800;background:${sb};color:${sc}">${escHtml(inv.status)}</span></div>
+    <h2 style="font-size:1.8rem;margin:0 0 6px">Rechnung</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 30px;margin:24px 0;font-size:.9rem"><div><label style="font-weight:700;color:#666;display:block;font-size:.75rem;text-transform:uppercase">Rechnungsnummer</label>${escHtml(inv.invoice_number)}</div><div><label style="font-weight:700;color:#666;display:block;font-size:.75rem;text-transform:uppercase">Datum</label>${date}</div><div><label style="font-weight:700;color:#666;display:block;font-size:.75rem;text-transform:uppercase">Kunde</label>${escHtml(cname||'—')}</div><div><label style="font-weight:700;color:#666;display:block;font-size:.75rem;text-transform:uppercase">Betrag</label>${escHtml(inv.betrag)}</div></div>
+    <div style="background:#f0f7ff;border:2px solid #b3d9ff;border-radius:12px;padding:20px;text-align:center;margin:30px 0"><div style="font-size:.8rem;font-weight:700;color:#666;margin-bottom:8px">GESAMTBETRAG</div><div style="font-size:2.5rem;font-weight:900;color:#1565C0">${escHtml(inv.betrag)}</div><div style="font-size:.78rem;color:#888;margin-top:6px">inkl. MwSt.</div></div>
+    <footer style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;font-size:.78rem;color:#888;text-align:center">Proreinigung · info@proreinigung.de</footer>
+    <div class="no-print" style="text-align:center;margin-top:20px"><button onclick="window.print()" style="padding:10px 24px;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">PDF speichern (Strg+S)</button></div></body></html>`;
+    const w=window.open('','_blank','width=800,height=700');if(w){w.document.write(html);w.document.close();}
+  }
+}
+
+async function openGuestPanel(gid){
+  document.getElementById('pro-panel').classList.add('open');document.getElementById('pro-panel-overlay').classList.add('open');
+  document.getElementById('panel-body').innerHTML='<div style="text-align:center;padding:40px"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--muted)"></i></div>';
+  const{data:g}=await sb.from('guest_requests').select('*').eq('id',gid).single();
+  if(!g)return;
+  document.getElementById('panel-title').textContent='📩 Gastanfrage';
+  const sOpts=['Neu','Bearbeitung','Erledigt','Abgelehnt'].map(s=>`<option value="${s}" ${g.status===s?'selected':''}>${s}</option>`).join('');
+  document.getElementById('panel-body').innerHTML=`
+    <div style="background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:700;color:#D97706"><i class="fa-solid fa-envelope"></i> Gastanfrage — kein Kundenkonto</div>
+    <div class="pro-detail-grid">
+      <div class="pro-detail-cell"><label>Name</label><span>${escHtml(g.name)}</span></div>
+      <div class="pro-detail-cell"><label>Firma</label><span>${escHtml(g.firma||'—')}</span></div>
+      <div class="pro-detail-cell"><label>E-Mail</label><span style="font-size:12px">${escHtml(g.email)}</span></div>
+      <div class="pro-detail-cell"><label>Telefon</label><span>${escHtml(g.telefon||'—')}</span></div>
+      <div class="pro-detail-cell"><label>Service</label><span>${escHtml(g.service)}</span></div>
+      <div class="pro-detail-cell"><label>Adresse</label><span>${escHtml(g.adresse||'—')}</span></div>
+      <div class="pro-detail-cell"><label>Termin</label><span>${g.datum?new Date(g.datum).toLocaleDateString('de-DE'):'—'}</span></div>
+      <div class="pro-detail-cell"><label>Fläche</label><span>${escHtml(g.flaeche||'—')}</span></div>
+      ${g.kommentar?`<div class="pro-detail-cell span2"><label>Kommentar</label><span>${escHtml(g.kommentar)}</span></div>`:''}
+    </div>
+    <div class="pro-form-group" style="margin-top:16px">
+      <label>Status</label>
+      <select class="pro-select" onchange="saveGuestStatus('${g.id}',this.value)">${sOpts}</select>
+    </div>`;
+  document.getElementById('panel-footer').innerHTML=`
+    <a href="mailto:${encodeURIComponent(g.email)}?subject=Ihre Anfrage bei Proreinigung" class="pro-btn pro-btn-primary pro-btn-sm"><i class="fa-solid fa-envelope"></i> E-Mail</a>
+    ${g.telefon?`<a href="https://wa.me/${g.telefon.replace(/\D/g,'')}" target="_blank" class="pro-btn pro-btn-wa pro-btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>`:''}
+    <button class="pro-btn pro-btn-secondary pro-btn-sm" onclick="closePanel()">Schließen</button>`;
+}
+
+async function saveGuestStatus(id,s){const r=await DB.updateGuestRequest(id,{status:s});if(r.ok){proToast('Status: '+s,'success');await loadOrders();}else proToast(r.msg,'error');}
+async function assignSelf(oid){const{data:{user}}=await sb.auth.getUser();const r=await DB.assignOrder(oid,user.id);if(r.ok){proToast('Auftrag übernommen','success');await loadOrders();openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function saveAssignment(oid){const sel=document.getElementById('assign-select');const uid=sel?.value;if(!uid)return proToast('Bitte Mitarbeiter wählen','error');const r=await DB.updateOrder(oid,{assigned_to:uid});if(r.ok){proToast('Zugewiesen','success');await loadOrders();openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function claimOrder(oid){const r=await DB.updateOrder(oid,{assigned_to:currentUserId});if(r.ok){proToast('Auftrag übernommen ✓','success');await loadOrders();openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function removeAssignment(oid){if(!confirm('Zuweisung entfernen?'))return;const r=await DB.updateOrder(oid,{assigned_to:null});if(r.ok){proToast('Zuweisung entfernt','success');await loadOrders();openOrderPanel(oid);}else proToast(r.msg,'error');}
+async function completeOrder(oid){if(!confirm('Auftrag abschließen?'))return;const r=await DB.updateOrder(oid,{status:'Abgeschlossen'});if(r.ok){proToast('Abgeschlossen','success');await loadOrders();}}
+async function cancelOrder(oid){if(!confirm('Auftrag stornieren?'))return;const r=await DB.updateOrder(oid,{status:'Storniert'});if(r.ok){proToast('Storniert','success');await loadOrders();}}
+function openInvoiceModal(oid,cid,nr){document.getElementById('inv-order-id').value=oid;document.getElementById('inv-client-id').value=cid;document.getElementById('inv-order-number').value=nr||'';const d=new Date();d.setDate(d.getDate()+14);document.getElementById('inv-due').value=d.toISOString().split('T')[0];document.getElementById('invoice-modal').classList.add('open');}
+function closeInvoiceModal(){document.getElementById('invoice-modal').classList.remove('open');}
+async function submitInvoice(){const oid=document.getElementById('inv-order-id').value;const cid=document.getElementById('inv-client-id').value;const v=document.getElementById('inv-betrag').value;if(!v)return proToast('Betrag eingeben','error');const betrag='€ '+parseFloat(v).toFixed(2).replace('.',',');const r=await DB.createInvoice({orderId:oid,clientId:cid,betrag});if(r.ok){proToast(r.invoice.invoice_number+' erstellt','success');closeInvoiceModal();document.getElementById('inv-betrag').value='';}else proToast(r.msg,'error');}
+</script>
+</body>
+</html>

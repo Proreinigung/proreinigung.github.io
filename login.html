@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anmelden — Proreinigung</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <a href="index.html">
+        <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto;display:block">
+      </a>
+    </div>
+    <h1 class="auth-title">Willkommen zurück</h1>
+    <p class="auth-sub">Melden Sie sich in Ihrem Konto an</p>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label for="email">E-Mail-Adresse <span>*</span></label>
+        <div class="input-icon-wrap">
+          <span class="inp-icon"><i class="fas fa-envelope"></i></span>
+          <input type="email" id="email" class="form-control" placeholder="ihre@email.de" required autocomplete="email">
+        </div>
+        <div class="form-error" id="email-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="password">Passwort <span>*</span></label>
+        <div class="input-icon-wrap" style="position:relative">
+          <span class="inp-icon"><i class="fas fa-lock"></i></span>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="password-toggle">👁</button>
+        </div>
+        <div class="form-error" id="pw-error"></div>
+      </div>
+
+      <div class="flex" style="justify-content:space-between;margin-bottom:24px;gap:8px">
+        <label class="form-check">
+          <input type="checkbox" id="remember"> Angemeldet bleiben
+        </label>
+        <a href="#" style="font-size:.85rem;color:var(--primary-light);font-weight:600">Passwort vergessen?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+        <i class="fas fa-sign-in-alt"></i> Anmelden
+      </button>
+
+      <div id="login-error" style="color:#e53e3e;font-size:.88rem;text-align:center;margin-top:14px;display:none"></div>
+    </form>
+
+    <div class="auth-divider">oder</div>
+
+    <div style="background:var(--light);border-radius:12px;padding:14px;font-size:.85rem;color:var(--text-light);text-align:center;border:1px solid var(--gray-200)">
+      <strong style="color:var(--primary-dark)">Demo-Konto:</strong><br>
+      E-Mail: <code style="background:#e8f0fe;padding:2px 6px;border-radius:4px">max@example.de</code> &nbsp; Passwort: <code style="background:#e8f0fe;padding:2px 6px;border-radius:4px">demo123</code>
+    </div>
+
+    <p class="auth-link">Noch kein Konto? <a href="register.html">Jetzt registrieren</a></p>
+    <p class="auth-link" style="margin-top:8px"><a href="index.html" style="color:var(--text-light)">← Zurück zur Startseite</a></p>
+  </div>
+</div>
+<div class="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+// Redirect if already logged in
+sb.auth.getUser().then(async ({ data: { user } }) => {
+  if (user) {
+    const p = await Auth.getProfile(user.id);
+    if (p && ['team','admin'].includes(p.role)) window.location.href = 'team/dashboard.html';
+    else window.location.href = 'dashboard.html';
+  }
+});
+
+document.getElementById('login-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = this.querySelector('button[type=submit]');
+  const errEl = document.getElementById('login-error');
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = 'Bitte alle Felder ausfüllen.'; errEl.style.display = 'block'; return;
+  }
+
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Anmelden…';
+  btn.disabled = true;
+
+  const res = await Auth.login(email, password);
+  if (res.ok) {
+    const profile = await Auth.getProfile(res.user.id);
+    showToast('Willkommen!', `Hallo ${profile?.vorname || ''}!`, 'success');
+    setTimeout(() => {
+      if (profile && ['team','admin'].includes(profile.role)) {
+        window.location.href = 'team/dashboard.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }, 800);
+  } else {
+    errEl.textContent = res.msg; errEl.style.display = 'block';
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

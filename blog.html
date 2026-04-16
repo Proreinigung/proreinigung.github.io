@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Proreinigung</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<nav id="pr-navbar" class="transparent">
+  <div class="pr-nav-inner">
+    <a href="index.html">
+      <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto;display:block">
+    </a>
+    <div class="pr-nav-links">
+      <a href="index.html" class="nav-link-item">Startseite</a>
+      <a href="services.html" class="nav-link-item">Leistungen</a>
+      <a href="about.html" class="nav-link-item">Über uns</a>
+      <a href="blog.html" class="nav-link-item active">Blog</a>
+      <a href="careers.html" class="nav-link-item">Karriere</a>
+      <a href="contact.html" class="nav-link-item">Kontakt</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="login.html" class="nav-login-link">Anmelden</a>
+      <a href="quote.html" class="pr-btn pr-btn-yellow" style="padding:10px 20px;font-size:.82rem">
+        Angebot anfragen
+        <span class="arrow" style="width:26px;height:26px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+    </div>
+    <button class="pr-hamburger" id="pr-ham" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="pr-mobile-menu" id="pr-mobile">
+  <a href="index.html">Startseite</a>
+  <a href="services.html">Leistungen</a>
+  <a href="about.html">Über uns</a>
+  <a href="blog.html">Blog</a>
+  <a href="careers.html">Karriere</a>
+  <a href="contact.html">Kontakt</a>
+  <div class="pr-mobile-actions">
+    <a href="login.html" class="pr-btn pr-btn-outline-white">Anmelden</a>
+    <a href="quote.html" class="pr-btn pr-btn-yellow">Angebot anfragen <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></span></a>
+  </div>
+</div>
+</div>
+
+<section class="pr-page-hero">
+  <div class="pr-page-hero-inner">
+    <span class="eyebrow">Wissen & Inspiration</span>
+    <h1>Unser Blog</h1>
+    <p class="sub">Tipps, Trends und Neuigkeiten rund um Reinigung, Hygiene und Gebäudepflege.</p>
+    <div class="pr-breadcrumb"><a href="index.html">Startseite</a><span>/</span><span>Blog</span></div>
+    </div>
+</section>
+
+<section class="section-pad" style="background:#fff">
+  <div class="container">
+    <!-- Categories -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px;justify-content:center" class="reveal">
+      <button class="btn btn-primary btn-sm" onclick="filterBlog('all',this)">Alle Artikel</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBlog('tipps',this)">Reinigungstipps</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBlog('nachhaltigkeit',this)">Nachhaltigkeit</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBlog('industrie',this)">Industrie</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBlog('news',this)">News</button>
+    </div>
+
+    <!-- Featured article -->
+    <div class="reveal" style="margin-bottom:48px">
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:48px;background:var(--light);border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--gray-200)">
+        <div style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));display:flex;align-items:center;justify-content:center;font-size:8rem;min-height:300px;color:rgba(255,255,255,.6)">🏆</div>
+        <div style="padding:40px">
+          <span class="blog-tag" style="font-size:.75rem">⭐ Featured</span>
+          <span class="blog-tag" style="margin-left:8px">Branchentrends</span>
+          <h2 style="font-size:1.6rem;margin:12px 0">Die Zukunft der Reinigungsbranche: KI und Robotik verändern alles</h2>
+          <p style="color:var(--text-light);font-size:.9rem;line-height:1.8;margin-bottom:20px">Erfahren Sie, wie künstliche Intelligenz und autonome Reinigungsroboter die Branche revolutionieren und was das für Ihre Anforderungen bedeutet.</p>
+          <div class="blog-meta" style="margin-bottom:20px">
+            <span><i class="fas fa-calendar"></i> 1. April 2026</span>
+            <span><i class="fas fa-clock"></i> 8 min Lesezeit</span>
+          </div>
+          <a href="#" class="btn btn-primary btn-sm">Artikel lesen <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog grid -->
+    <div id="blog-grid" class="blog-grid">
+      <div class="blog-card reveal reveal-delay-1" data-cat="tipps">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#003D8A,#0066CC)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">🧹</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Reinigungstipps</span>
+          <h3>5 Tipps für ein dauerhaft sauberes Büro zwischen den Reinigungsterminen</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Kleine Maßnahmen, die Sie täglich durchführen können, um Ihr Büro sauber zu halten…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 25. März 2026</span>
+            <span><i class="fas fa-clock"></i> 4 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card reveal reveal-delay-2" data-cat="nachhaltigkeit">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#1B4332,#2D6A4F)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">🌿</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Nachhaltigkeit</span>
+          <h3>Umweltfreundliche Reinigungsmittel: Gut für Ihre Mitarbeiter, gut für die Umwelt</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Biologisch abbaubare Produkte schonen nicht nur die Umwelt, sondern auch die Gesundheit…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 18. März 2026</span>
+            <span><i class="fas fa-clock"></i> 5 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card reveal reveal-delay-3" data-cat="industrie">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#5C3317,#8B5E3C)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">🏭</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Industrie</span>
+          <h3>Industriereinigung: Warum regelmäßige Wartung Ihre Maschinen schützt</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Verunreinigungen können Maschinen beschädigen. Regelmäßige Reinigung verlängert die Lebensdauer…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 10. März 2026</span>
+            <span><i class="fas fa-clock"></i> 6 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card reveal reveal-delay-1" data-cat="tipps">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#4A0E8F,#7B2FF7)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">🪟</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Reinigungstipps</span>
+          <h3>Glasreinigung ohne Streifen: Die besten Profitipps für glänzende Fenster</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Professionelle Techniken für streifenfreie Fenster, die Sie selbst anwenden können…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 5. März 2026</span>
+            <span><i class="fas fa-clock"></i> 3 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card reveal reveal-delay-2" data-cat="news">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#8B1A1A,#C0392B)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">📰</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">News</span>
+          <h3>Proreinigung expandiert: Neue Standorte in Hamburg und Berlin ab Mai 2026</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Wir freuen uns, die Eröffnung unserer neuen Niederlassungen bekanntzugeben…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 1. März 2026</span>
+            <span><i class="fas fa-clock"></i> 2 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="blog-card reveal reveal-delay-3" data-cat="nachhaltigkeit">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#1a365d,#2a4a7f)">
+          <div class="img-placeholder" style="color:rgba(255,255,255,.6);background:transparent;font-size:3.5rem">♻️</div>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Nachhaltigkeit</span>
+          <h3>Zertifizierung ISO 14001: Unser Engagement für den Umweltschutz</h3>
+          <p style="font-size:.85rem;color:var(--text-light);line-height:1.7;margin-top:8px">Wir haben die ISO 14001 Zertifizierung erhalten – ein Beweis unseres Engagements…</p>
+          <div class="blog-meta">
+            <span><i class="fas fa-calendar"></i> 20. Feb. 2026</span>
+            <span><i class="fas fa-clock"></i> 4 min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center" style="margin-top:48px">
+      <button class="btn btn-outline btn-lg reveal">Mehr Artikel laden <i class="fas fa-arrow-down"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section style="background:var(--light);padding:80px 0">
+  <div class="container" style="max-width:700px;text-align:center">
+    <div class="reveal">
+      <span class="section-label">Newsletter</span>
+      <h2 class="section-title" style="font-size:2rem">Keine Neuigkeiten verpassen!</h2>
+      <p style="color:var(--text-light);margin-bottom:32px">Abonnieren Sie unseren Newsletter und erhalten Sie monatlich Tipps, Trends und Angebote direkt in Ihr Postfach.</p>
+      <form id="newsletter-form" style="display:flex;gap:12px;max-width:500px;margin:0 auto;flex-wrap:wrap;justify-content:center">
+        <input type="email" class="form-control" placeholder="Ihre E-Mail-Adresse" style="flex:1;min-width:240px" required>
+        <button type="submit" class="btn btn-primary">Abonnieren <i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer id="pr-footer">
+  <div class="pr-container">
+    <div class="pr-footer-grid">
+      <div class="pr-footer-brand">
+        <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto">
+        <p>Ihr zuverlässiger Reinigungspartner in Deutschland. Professionell, nachhaltig und effizient — seit über 15 Jahren.</p>
+        <div class="pr-footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="XING"><i class="fab fa-xing"></i></a>
+        </div>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="services.html">Büroreinigung</a></li>
+          <li><a href="services.html">Industriereinigung</a></li>
+          <li><a href="services.html">Glasreinigung</a></li>
+          <li><a href="services.html">Grundreinigung</a></li>
+          <li><a href="services.html">Fassadenreinigung</a></li>
+          <li><a href="services.html">Teppichreinigung</a></li>
+          <li><a href="services.html">Parkhausreinigung</a></li>
+          <li><a href="services.html">Krankenhausreinigung</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Unternehmen</h4>
+        <ul>
+          <li><a href="about.html">Über uns</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="careers.html">Karriere</a></li>
+          <li><a href="quote.html">Angebot anfragen</a></li>
+          <li><a href="contact.html">Kontakt</a></li>
+          <li><a href="login.html">Mein Konto</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Kontakt</h4>
+        <div class="pr-footer-contact">
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fab fa-whatsapp"></i></div>
+            <div class="tx"><a href="https://wa.me/491637606478">+49 163 7606478</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-envelope"></i></div>
+            <div class="tx"><a href="mailto:Proreinigung@gmail.com">Proreinigung@gmail.com</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="tx">Rheydter Str. 254<br>41065 Mönchengladbach</div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-clock"></i></div>
+            <div class="tx">Mo–Fr: 07:00–18:00<br>Sa: 08:00–14:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pr-footer-bottom">
+      <p>© 2026 Proreinigung GmbH. Alle Rechte vorbehalten.</p>
+      <div class="pr-footer-legal">
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="wa-float">
+  <a href="https://wa.me/491637606478" target="_blank" class="wa-btn" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+</div>
+<script>
+function filterBlog(cat, btn) {
+  document.querySelectorAll('[onclick*=filterBlog]').forEach(b => {
+    b.className = 'btn btn-outline btn-sm';
+  });
+  btn.className = 'btn btn-primary btn-sm';
+  document.querySelectorAll('#blog-grid .blog-card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat === cat) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  showToast('Abonniert!', 'Vielen Dank für Ihr Abonnement!', 'success');
+  this.reset();
+});
+</script>
+
+<div class="toast-container"></div>
+<button class="back-top" id="back-top" aria-label="Nach oben" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/db.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/main.js"></script>
+<script>
+// Navbar scroll
+const navbar = document.getElementById('pr-navbar');
+if (navbar) {
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('solid', window.scrollY > 60);
+    navbar.classList.toggle('transparent', window.scrollY <= 60);
+    const bt = document.getElementById('back-top');
+    if (bt) bt.classList.toggle('show', window.scrollY > 400);
+  });
+}
+// Mobile menu
+const ham = document.getElementById('pr-ham');
+const mob = document.getElementById('pr-mobile');
+if (ham && mob) {
+  ham.addEventListener('click', () => mob.classList.toggle('open'));
+  mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mob.classList.remove('open')));
+}
+// Scroll reveal
+const srObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); srObs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.sr,.sr-left,.sr-right').forEach(el => srObs.observe(el));
+// Auth link
+(async () => {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      document.querySelectorAll('a[href="login.html"]').forEach(el => { el.href = 'dashboard.html'; el.textContent = 'Mein Konto'; });
+    }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

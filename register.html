@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrieren — Proreinigung</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>.auth-card{max-width:540px}</style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <a href="index.html">
+        <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto;display:block">
+      </a>
+    </div>
+    <h1 class="auth-title">Konto erstellen</h1>
+    <p class="auth-sub">Registrieren Sie sich für ein persönliches Kundenkonto</p>
+
+    <form id="register-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="vorname">Vorname <span>*</span></label>
+          <div class="input-icon-wrap">
+            <span class="inp-icon"><i class="fas fa-user"></i></span>
+            <input type="text" id="vorname" class="form-control" placeholder="Max" required>
+          </div>
+          <div class="form-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="nachname">Nachname <span>*</span></label>
+          <div class="input-icon-wrap">
+            <span class="inp-icon"><i class="fas fa-user"></i></span>
+            <input type="text" id="nachname" class="form-control" placeholder="Mustermann" required>
+          </div>
+          <div class="form-error"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">E-Mail-Adresse <span>*</span></label>
+        <div class="input-icon-wrap">
+          <span class="inp-icon"><i class="fas fa-envelope"></i></span>
+          <input type="email" id="email" class="form-control" placeholder="ihre@email.de" required autocomplete="email">
+        </div>
+        <div class="form-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="telefon">Telefonnummer</label>
+        <div class="input-icon-wrap">
+          <span class="inp-icon"><i class="fas fa-phone"></i></span>
+          <input type="tel" id="telefon" class="form-control" placeholder="+49 123 456789">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Passwort <span>*</span></label>
+        <div class="input-icon-wrap" style="position:relative">
+          <span class="inp-icon"><i class="fas fa-lock"></i></span>
+          <input type="password" id="password" class="form-control" placeholder="Mindestens 6 Zeichen" required autocomplete="new-password">
+          <button type="button" class="password-toggle">👁</button>
+        </div>
+        <div class="form-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="password2">Passwort bestätigen <span>*</span></label>
+        <div class="input-icon-wrap" style="position:relative">
+          <span class="inp-icon"><i class="fas fa-lock"></i></span>
+          <input type="password" id="password2" class="form-control" placeholder="Passwort wiederholen" required autocomplete="new-password">
+          <button type="button" class="password-toggle">👁</button>
+        </div>
+        <div class="form-error"></div>
+      </div>
+
+      <label class="form-check" style="margin-bottom:24px;align-items:flex-start;gap:10px">
+        <input type="checkbox" id="agb" required style="margin-top:3px">
+        <span>Ich akzeptiere die <a href="#" style="color:var(--primary-light);font-weight:600">Allgemeinen Geschäftsbedingungen</a> und die <a href="#" style="color:var(--primary-light);font-weight:600">Datenschutzerklärung</a>.</span>
+      </label>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+        <i class="fas fa-user-plus"></i> Konto erstellen
+      </button>
+      <div id="reg-error" style="color:#e53e3e;font-size:.88rem;text-align:center;margin-top:14px;display:none"></div>
+    </form>
+
+    <p class="auth-link">Bereits ein Konto? <a href="login.html">Jetzt anmelden</a></p>
+    <p class="auth-link" style="margin-top:8px"><a href="index.html" style="color:var(--text-light)">← Zurück zur Startseite</a></p>
+  </div>
+</div>
+<div class="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.getElementById('register-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('reg-error');
+  const btn = this.querySelector('button[type=submit]');
+  errEl.style.display = 'none';
+
+  const vorname  = document.getElementById('vorname').value.trim();
+  const nachname = document.getElementById('nachname').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const telefon  = document.getElementById('telefon').value.trim();
+  const password = document.getElementById('password').value;
+  const password2= document.getElementById('password2').value;
+  const agb      = document.getElementById('agb').checked;
+
+  if (!vorname || !nachname || !email || !password) {
+    errEl.textContent = 'Bitte alle Pflichtfelder ausfüllen.'; errEl.style.display = 'block'; return;
+  }
+  if (password.length < 6) {
+    errEl.textContent = 'Passwort muss mindestens 6 Zeichen haben.'; errEl.style.display = 'block'; return;
+  }
+  if (password !== password2) {
+    errEl.textContent = 'Passwörter stimmen nicht überein.'; errEl.style.display = 'block'; return;
+  }
+  if (!agb) {
+    errEl.textContent = 'Bitte AGB und Datenschutz akzeptieren.'; errEl.style.display = 'block'; return;
+  }
+
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Erstellen…';
+  btn.disabled = true;
+
+  const res = await Auth.register({ vorname, nachname, email, password, telefon });
+  if (res.ok) {
+    showToast('Willkommen!', `Konto erstellt, ${vorname}!`, 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+  } else {
+    errEl.textContent = res.msg; errEl.style.display = 'block';
+    btn.innerHTML = '<i class="fas fa-user-plus"></i> Konto erstellen';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

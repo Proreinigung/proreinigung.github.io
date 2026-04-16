@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Admin Panel — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+/* Admin tabs */
+.admin-tabs{display:flex;gap:4px;background:var(--bg);padding:5px;border-radius:14px;border:1px solid var(--border);width:fit-content;flex-wrap:wrap;margin-bottom:20px}
+.admin-tab-btn{padding:8px 18px;border-radius:10px;font-size:.83rem;font-weight:700;border:none;background:none;cursor:pointer;color:var(--muted);transition:.18s}
+.admin-tab-btn.active{background:#fff;color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.admin-tab-btn:hover:not(.active){color:var(--fg);background:rgba(255,255,255,.6)}
+.admin-tab{display:none}
+.admin-tab.active-tab{display:block}
+
+/* Team member row */
+.mr-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:#fff;margin-bottom:8px;transition:.15s}
+.mr-row:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.mr-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0;overflow:hidden;position:relative}
+.mr-av img{width:100%;height:100%;object-fit:cover}
+.mr-online-dot{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#9ca3af;border:2px solid #fff}
+.mr-online-dot.on{background:#22c55e}
+.mr-info{flex:1;min-width:0}
+.mr-name{font-weight:700;font-size:.88rem;color:var(--fg)}
+.mr-email{font-size:.73rem;color:var(--muted);margin-top:1px}
+.mr-actions-wrap{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+
+/* Client row */
+.client-row{border-radius:14px;margin-bottom:8px;background:#fff;border:1px solid var(--border);overflow:hidden;transition:.18s}
+.client-row-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:.15s}
+.client-row-hd:hover{background:var(--bg)}
+.client-expand{flex:1;min-width:0}
+.client-name{font-weight:700;font-size:.88rem;color:var(--fg)}
+.client-email{font-size:.73rem;color:var(--muted);margin-top:1px}
+.client-actions-row{display:flex;gap:6px;flex-shrink:0}
+.client-detail{display:none;padding:16px;border-top:1px solid var(--border);background:var(--bg)}
+.client-detail.open{display:block}
+.client-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:600px){.client-edit-grid{grid-template-columns:1fr}}
+
+/* Activity item */
+.act-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border-radius:10px;border:1px solid var(--border)}
+.act-icon{font-size:1.1rem;min-width:24px}
+
+/* Order/invoice item */
+.co-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;margin-bottom:4px;background:#fff;border:1px solid var(--border);font-size:.82rem}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Admin</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Admin</span>
+    <a href="admin.html" class="pro-sb-link"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Admin Panel</div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Admin</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div class="pro-mob-title"><h1>Admin Panel</h1></div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" onclick="showTab('team-tab',this)"><i class="fa-solid fa-users"></i> Team</button>
+      <button class="admin-tab-btn" onclick="showTab('clients-tab',this)"><i class="fa-solid fa-user-group"></i> Kunden</button>
+      <button class="admin-tab-btn" onclick="showTab('activity-tab',this)"><i class="fa-solid fa-clock-rotate-left"></i> Aktivitäten</button>
+      <button class="admin-tab-btn" onclick="showTab('add-tab',this)" id="tab-add-btn"><i class="fa-solid fa-user-plus"></i> Hinzufügen</button>
+    </div>
+
+    <!-- Team Tab -->
+    <div id="team-tab" class="admin-tab active-tab">
+      <div class="pro-card">
+        <div class="pro-card-hd">
+          <h3>Team Mitglieder <span id="team-count" style="font-size:12px;color:var(--muted);font-weight:500"></span></h3>
+        </div>
+        <div id="team-list"><div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+      </div>
+    </div>
+
+    <!-- Clients Tab -->
+    <div id="clients-tab" class="admin-tab">
+      <div class="pro-card">
+        <div class="pro-card-hd">
+          <h3>Kunden <span id="clients-count" style="font-size:12px;color:var(--muted);font-weight:500"></span></h3>
+          <div class="pro-filter-bar">
+            <input type="text" id="clients-search" placeholder="Kunden suchen…" oninput="filterClients()" style="width:220px"/>
+          </div>
+        </div>
+        <div id="clients-list"><div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+      </div>
+    </div>
+
+    <!-- Activity Tab -->
+    <div id="activity-tab" class="admin-tab">
+      <div class="pro-card">
+        <div class="pro-card-hd">
+          <h3>Aktivitätenprotokoll</h3>
+          <div class="pro-filter-bar">
+            <select id="activity-action-filter" onchange="loadActivity()">
+              <option value="">Alle Aktionen</option>
+              <option value="login">Anmeldungen</option>
+              <option value="logout">Abmeldungen</option>
+              <option value="create_order">Bestellungen</option>
+              <option value="update_order">Auftragsänderungen</option>
+              <option value="register">Registrierungen</option>
+            </select>
+            <input type="date" id="activity-date-filter" onchange="loadActivity()"/>
+            <select id="activity-user-filter" onchange="loadActivity()">
+              <option value="">Alle Mitarbeiter</option>
+            </select>
+            <button class="pro-btn pro-btn-outline" style="font-size:.8rem" onclick="clearActivityFilters()"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+        <div id="activity-list" style="display:flex;flex-direction:column;gap:6px;max-height:520px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- Add Team Tab -->
+    <div id="add-tab" class="admin-tab">
+      <div class="pro-card" style="max-width:540px">
+        <div class="pro-card-hd"><h3><i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> Neuen Mitarbeiter hinzufügen</h3></div>
+        <form id="add-member-form" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="pro-form-group">
+              <label class="pro-label">Vorname <span style="color:#EF4444">*</span></label>
+              <input type="text" id="am-vorname" class="pro-input" placeholder="Max" required>
+            </div>
+            <div class="pro-form-group">
+              <label class="pro-label">Nachname <span style="color:#EF4444">*</span></label>
+              <input type="text" id="am-nachname" class="pro-input" placeholder="Mustermann" required>
+            </div>
+          </div>
+          <div class="pro-form-group" style="margin-top:12px">
+            <label class="pro-label">E-Mail <span style="color:#EF4444">*</span></label>
+            <input type="email" id="am-email" class="pro-input" placeholder="max@proreinigung.de" required>
+          </div>
+          <div class="pro-form-group" style="margin-top:12px">
+            <label class="pro-label">Passwort <span style="color:#EF4444">*</span></label>
+            <input type="password" id="am-password" class="pro-input" placeholder="Mindestens 8 Zeichen" required>
+          </div>
+          <div class="pro-form-group" style="margin-top:12px">
+            <label class="pro-label">Rolle</label>
+            <select id="am-role" class="pro-input">
+              <option value="team">Mitarbeiter (Team)</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div id="add-error" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;border-radius:10px;padding:10px 14px;font-size:.83rem;display:none;margin-top:12px"></div>
+          <button type="submit" class="pro-btn" style="margin-top:16px">
+            <i class="fa-solid fa-user-plus"></i> Mitarbeiter erstellen
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px"><button class="pro-pwa-install">Installieren</button><button class="pro-pwa-close">✕</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let allClients = [];
+let currentUserId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('admin.html');
+  if (!auth) return;
+  if (auth.profile.role !== 'admin') { window.location.href = 'dashboard.html'; return; }
+  currentUserId = auth.user.id;
+
+  loadTeam();
+  loadActivity();
+
+  const hash = window.location.hash;
+  if (hash === '#users')   { document.querySelectorAll('.admin-tab-btn')[3].click(); }
+  if (hash === '#clients') { document.querySelectorAll('.admin-tab-btn')[1].click(); }
+});
+
+function showTab(tabId, btn) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active-tab'));
+  document.getElementById(tabId).classList.add('active-tab');
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tabId === 'clients-tab') loadClients();
+  if (tabId === 'activity-tab') loadActivity();
+}
+
+/* ── TEAM ─────────────────────────────────────────────── */
+async function loadTeam() {
+  const members = await DB.getTeamMembers();
+  document.getElementById('team-count').textContent = `— ${members.length} Mitglieder`;
+  document.getElementById('team-list').innerHTML = members.map(m => {
+    const initials = ((m.vorname||'?')[0]+(m.nachname||'?')[0]).toUpperCase();
+    const roleCls = m.role === 'admin' ? 'pb-done' : 'pb-aktiv';
+    return `<div class="mr-row">
+      <div class="mr-av">
+        ${m.avatar_url ? `<img src="${escHtml(m.avatar_url)}" alt="">` : initials}
+        <div class="mr-online-dot ${m.is_online ? 'on' : ''}"></div>
+      </div>
+      <div class="mr-info">
+        <div class="mr-name">${escHtml(m.vorname)} ${escHtml(m.nachname)}</div>
+        <div class="mr-email">${escHtml(m.email)}${m.last_seen ? ` · ${new Date(m.last_seen).toLocaleString('de-DE',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})}` : ''}</div>
+      </div>
+      <span class="pro-badge ${roleCls}">${m.role}</span>
+      <div class="mr-actions-wrap">
+        <a href="profil.html?id=${m.id}" class="pro-btn pro-btn-outline" style="font-size:.76rem;padding:5px 12px"><i class="fa-solid fa-user"></i> Profil</a>
+        ${m.role !== 'admin' ? `<button class="pro-btn" style="font-size:.76rem;padding:5px 12px;background:var(--teal)" onclick="promoteUser('${m.id}')"><i class="fa-solid fa-shield-halved"></i> Admin</button>` : ''}
+        <button class="pro-btn" style="font-size:.76rem;padding:5px 12px;background:#EF4444" onclick="removeUser('${m.id}','${escHtml(m.vorname+' '+m.nachname)}')"><i class="fa-solid fa-user-minus"></i></button>
+      </div>
+    </div>`;
+  }).join('') || '<p style="color:var(--muted);padding:16px 0">Keine Teammitglieder.</p>';
+}
+
+async function promoteUser(userId) {
+  if (!confirm('Diesen Mitarbeiter zum Administrator ernennen?')) return;
+  const { error } = await sb.from('profiles').update({ role: 'admin' }).eq('id', userId);
+  if (!error) { proToast('Benutzer ist jetzt Administrator.', 'success'); loadTeam(); }
+  else proToast(error.message, 'error');
+}
+
+async function removeUser(userId, name) {
+  if (!confirm(`${name} aus dem Team entfernen?`)) return;
+  const { error } = await sb.from('profiles').update({ role: 'client' }).eq('id', userId);
+  if (!error) { proToast(`${name} wurde aus dem Team entfernt.`, 'success'); loadTeam(); }
+  else proToast(error.message, 'error');
+}
+
+/* ── CLIENTS ──────────────────────────────────────────── */
+async function loadClients() {
+  const all = await DB.getAllProfiles();
+  allClients = all.filter(p => p.role === 'client');
+  document.getElementById('clients-count').textContent = `— ${allClients.length} Kunden`;
+  renderClients(allClients);
+}
+
+function filterClients() {
+  const q = document.getElementById('clients-search').value.toLowerCase();
+  renderClients(q ? allClients.filter(c =>
+    `${c.vorname} ${c.nachname} ${c.email} ${c.telefon||''}`.toLowerCase().includes(q)
+  ) : allClients);
+}
+
+function renderClients(clients) {
+  const list = document.getElementById('clients-list');
+  list.innerHTML = clients.length ? clients.map(c => {
+    const initials = ((c.vorname||'?')[0]+(c.nachname||'?')[0]).toUpperCase();
+    return `<div class="client-row" id="cr-${c.id}">
+      <div class="client-row-hd" onclick="toggleClient('${c.id}')">
+        <div class="mr-av" style="width:38px;height:38px;font-size:.82rem">
+          ${c.avatar_url ? `<img src="${escHtml(c.avatar_url)}" alt="">` : initials}
+        </div>
+        <div class="client-expand">
+          <div class="client-name">${escHtml(c.vorname)} ${escHtml(c.nachname)}</div>
+          <div class="client-email">${escHtml(c.email)} ${c.telefon ? '· '+escHtml(c.telefon) : ''} · Seit ${new Date(c.created_at).toLocaleDateString('de-DE')}</div>
+        </div>
+        <div class="client-actions-row">
+          <button class="pro-btn" style="font-size:.74rem;padding:5px 10px;background:#EDE9FE;color:#7C3AED" onclick="event.stopPropagation();promoteToTeam('${c.id}','${escHtml(c.vorname+' '+c.nachname)}')">→ Team</button>
+          <button class="pro-btn" style="font-size:.74rem;padding:5px 10px;background:#FEF2F2;color:#DC2626" onclick="event.stopPropagation();deleteClient('${c.id}','${escHtml(c.vorname+' '+c.nachname)}')"><i class="fa-solid fa-trash"></i></button>
+          <i class="fa-solid fa-chevron-right" style="color:var(--muted);font-size:.75rem;margin-left:4px"></i>
+        </div>
+      </div>
+      <div class="client-detail" id="cd-${c.id}">
+        <div style="color:var(--muted);font-size:.82rem;text-align:center;padding:14px"><i class="fa-solid fa-spinner fa-spin"></i> Daten laden…</div>
+      </div>
+    </div>`;
+  }).join('')
+  : `<p style="color:var(--muted);padding:20px;text-align:center">Keine Kunden gefunden.</p>`;
+}
+
+async function toggleClient(clientId) {
+  const detail = document.getElementById(`cd-${clientId}`);
+  if (detail.classList.contains('open')) { detail.classList.remove('open'); return; }
+  detail.classList.add('open');
+  detail.innerHTML = '<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:14px"><i class="fa-solid fa-spinner fa-spin"></i></div>';
+  const { profile, orders, invoices } = await DB.getClientDetails(clientId);
+  if (!profile) { detail.innerHTML = '<p style="color:var(--muted)">Fehler beim Laden.</p>'; return; }
+  detail.innerHTML = `
+    <div class="client-edit-grid" style="margin-bottom:14px">
+      <div class="pro-form-group"><label class="pro-label" style="font-size:.68rem">Vorname</label><input type="text" id="ef-vn-${clientId}" class="pro-input" value="${escHtml(profile.vorname||'')}" style="font-size:.83rem;padding:7px 10px"></div>
+      <div class="pro-form-group"><label class="pro-label" style="font-size:.68rem">Nachname</label><input type="text" id="ef-nn-${clientId}" class="pro-input" value="${escHtml(profile.nachname||'')}" style="font-size:.83rem;padding:7px 10px"></div>
+      <div class="pro-form-group"><label class="pro-label" style="font-size:.68rem">E-Mail</label><input type="email" id="ef-em-${clientId}" class="pro-input" value="${escHtml(profile.email||'')}" style="font-size:.83rem;padding:7px 10px"></div>
+      <div class="pro-form-group"><label class="pro-label" style="font-size:.68rem">Telefon</label><input type="text" id="ef-tel-${clientId}" class="pro-input" value="${escHtml(profile.telefon||'')}" style="font-size:.83rem;padding:7px 10px"></div>
+      <div class="pro-form-group" style="grid-column:span 2"><label class="pro-label" style="font-size:.68rem">Adresse</label><input type="text" id="ef-adr-${clientId}" class="pro-input" value="${escHtml(profile.adresse||'')}" placeholder="Straße, Stadt" style="font-size:.83rem;padding:7px 10px"></div>
+    </div>
+    <button class="pro-btn" style="font-size:.8rem;margin-bottom:16px" onclick="saveClientProfile('${clientId}')"><i class="fa-solid fa-floppy-disk"></i> Speichern</button>
+    <div style="margin-bottom:14px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--fg);margin-bottom:8px">📋 Aufträge (${orders.length})</div>
+      <div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+        ${orders.length ? orders.map(o => `<div class="co-item">
+          ${statusBadge(o.status)}
+          <div style="flex:1"><div style="font-weight:700;font-size:.8rem">${escHtml(o.order_number)} · ${escHtml(o.service)}</div><div style="font-size:.7rem;color:var(--muted)">${o.datum ? new Date(o.datum).toLocaleDateString('de-DE') : '—'} ${o.preis_agreed ? '· €'+o.preis_agreed : ''}</div></div>
+          <a href="orders.html?order=${o.id}" class="pro-btn pro-btn-outline" style="font-size:.7rem;padding:3px 8px">Details</a>
+          <button class="pro-btn" style="font-size:.7rem;padding:3px 8px;background:#EF4444" onclick="deleteOrder('${o.id}','${escHtml(o.order_number)}')"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('') : '<p style="color:var(--muted);font-size:.82rem">Keine Aufträge.</p>'}
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:700;font-size:.82rem;color:var(--fg);margin-bottom:8px">🧾 Rechnungen (${invoices.length})</div>
+      <div style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+        ${invoices.length ? invoices.map(inv => `<div class="co-item">
+          <div style="flex:1"><div style="font-weight:700;font-size:.8rem">${escHtml(inv.invoice_number)}</div><div style="font-size:.7rem;color:var(--muted)">${escHtml(inv.datum||'—')} · ${escHtml(inv.betrag||'—')}</div></div>
+          <select class="pro-input" style="width:auto;font-size:.75rem;padding:4px 8px" onchange="updateInvStatus('${inv.id}',this.value,'${clientId}')">
+            <option value="Ausstehend" ${inv.status==='Ausstehend'?'selected':''}>Ausstehend</option>
+            <option value="Bezahlt" ${inv.status==='Bezahlt'?'selected':''}>Bezahlt ✓</option>
+            <option value="Storniert" ${inv.status==='Storniert'?'selected':''}>Storniert</option>
+          </select>
+          <button class="pro-btn" style="font-size:.7rem;padding:3px 8px;background:#EF4444" onclick="deleteInvoice('${inv.id}','${clientId}')"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('') : '<p style="color:var(--muted);font-size:.82rem">Keine Rechnungen.</p>'}
+      </div>
+    </div>`;
+}
+
+async function saveClientProfile(clientId) {
+  const updates = {
+    vorname:  document.getElementById(`ef-vn-${clientId}`).value.trim(),
+    nachname: document.getElementById(`ef-nn-${clientId}`).value.trim(),
+    email:    document.getElementById(`ef-em-${clientId}`).value.trim(),
+    telefon:  document.getElementById(`ef-tel-${clientId}`).value.trim(),
+    adresse:  document.getElementById(`ef-adr-${clientId}`).value.trim()
+  };
+  const res = await DB.updateClientProfile(clientId, updates);
+  if (res.ok) { proToast('Kundendaten gespeichert.', 'success'); await loadClients(); setTimeout(() => toggleClient(clientId), 200); }
+  else proToast(res.msg, 'error');
+}
+
+async function deleteOrder(orderId, orderNumber) {
+  if (!confirm(`Auftrag ${orderNumber} wirklich löschen?`)) return;
+  await sb.from('order_messages').delete().eq('order_id', orderId);
+  await sb.from('invoices').delete().eq('order_id', orderId);
+  const { error } = await sb.from('orders').delete().eq('id', orderId);
+  if (!error) proToast(`Auftrag ${orderNumber} gelöscht.`, 'success');
+  else proToast(error.message, 'error');
+}
+
+async function updateInvStatus(invId, status, clientId) {
+  const updates = { status };
+  if (status === 'Bezahlt') updates.paid_at = new Date().toISOString();
+  const res = await DB.updateInvoice(invId, updates);
+  if (res.ok) proToast('Rechnungsstatus: ' + status, 'success');
+  else proToast(res.msg, 'error');
+}
+
+async function deleteInvoice(invId, clientId) {
+  if (!confirm('Rechnung wirklich löschen?')) return;
+  const { error } = await sb.from('invoices').delete().eq('id', invId);
+  if (!error) { proToast('Rechnung gelöscht.', 'success'); toggleClient(clientId); }
+  else proToast(error.message, 'error');
+}
+
+async function promoteToTeam(clientId, name) {
+  if (!confirm(`${name} zum Team-Mitarbeiter ernennen?`)) return;
+  const { error } = await sb.from('profiles').update({ role: 'team' }).eq('id', clientId);
+  if (!error) { proToast(`${name} ist jetzt im Team.`, 'success'); loadClients(); }
+  else proToast(error.message, 'error');
+}
+
+async function deleteClient(clientId, name) {
+  if (!confirm(`Kunden "${name}" und alle zugehörigen Daten wirklich löschen?\n\nDas kann nicht rückgängig gemacht werden!`)) return;
+  const res = await DB.deleteClient(clientId);
+  if (res.ok) { proToast(`${name} wurde gelöscht.`, 'success'); loadClients(); }
+  else proToast(res.msg, 'error');
+}
+
+/* ── ACTIVITY ──────────────────────────────────────────── */
+async function loadActivity() {
+  const sel = document.getElementById('activity-user-filter');
+  if (sel.querySelectorAll('option').length <= 1) {
+    const team = await DB.getTeamMembers();
+    team.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.id; o.textContent = `${m.vorname} ${m.nachname}`;
+      sel.appendChild(o);
+    });
+  }
+  const action = document.getElementById('activity-action-filter').value || '';
+  const date   = document.getElementById('activity-date-filter').value   || '';
+  const userId = document.getElementById('activity-user-filter').value   || '';
+  const filters = {};
+  if (action) filters.action = action;
+  if (date)   filters.date   = date;
+  if (userId) filters.userId = userId;
+  const logs = await DB.getActivityLogs(150, filters);
+  const icons = { login:'🟢', logout:'🔴', create_order:'📋', update_order:'✏️', register:'👤' };
+  const roleColors = { admin:'#7C3AED', team:'#1565C0', client:'#15803d' };
+  document.getElementById('activity-list').innerHTML = logs.map(l => `
+    <div class="act-item">
+      <span class="act-icon">${icons[l.action]||'•'}</span>
+      <div style="flex:1;min-width:0">
+        <span style="font-weight:700;font-size:.85rem;color:var(--fg)">${l.user ? escHtml(l.user.vorname+' '+l.user.nachname) : 'Unbekannt'}</span>
+        ${l.user ? `<span class="pro-badge pb-info" style="font-size:.62rem;background:${roleColors[l.user.role]||'#6b7280'}20;color:${roleColors[l.user.role]||'#6b7280'};margin-left:6px">${l.user.role}</span>` : ''}
+        <span style="color:var(--muted);font-size:.82rem;margin-left:8px">${escHtml(l.details||l.action)}</span>
+      </div>
+      <span style="font-size:.72rem;color:var(--muted);flex-shrink:0">${new Date(l.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join('') || '<p style="color:var(--muted);text-align:center;padding:20px">Keine Aktivitäten gefunden.</p>';
+}
+
+function clearActivityFilters() {
+  document.getElementById('activity-action-filter').value = '';
+  document.getElementById('activity-date-filter').value   = '';
+  document.getElementById('activity-user-filter').value   = '';
+  loadActivity();
+}
+
+/* ── ADD MEMBER ──────────────────────────────────────── */
+document.getElementById('add-member-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('add-error');
+  errEl.style.display = 'none';
+  const vorname  = document.getElementById('am-vorname').value.trim();
+  const nachname = document.getElementById('am-nachname').value.trim();
+  const email    = document.getElementById('am-email').value.trim();
+  const password = document.getElementById('am-password').value;
+  const role     = document.getElementById('am-role').value;
+  if (!vorname || !nachname || !email || !password) {
+    errEl.textContent = 'Bitte alle Pflichtfelder ausfüllen.'; errEl.style.display = 'block'; return;
+  }
+  if (password.length < 8) {
+    errEl.textContent = 'Passwort muss mindestens 8 Zeichen haben.'; errEl.style.display = 'block'; return;
+  }
+  const { data, error } = await sb.auth.signUp({
+    email, password, options: { data: { vorname, nachname, role } }
+  });
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+  if (data.user) {
+    await sb.from('profiles').upsert({ id: data.user.id, email, vorname, nachname, role });
+    proToast(`${vorname} ${nachname} wurde als ${role} hinzugefügt.`, 'success');
+    this.reset();
+    loadTeam();
+  }
+});
+
+function statusBadge(s) {
+  const map = { Neu:'pb-neu', Aktiv:'pb-aktiv', Abgeschlossen:'pb-done', Storniert:'pb-cancel', Ausstehend:'pb-ausstehend' };
+  return `<span class="pro-badge ${map[s]||'pb-info'}">${escHtml(s||'—')}</span>`;
+}
+
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

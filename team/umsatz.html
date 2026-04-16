@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Umsatz — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+/* KPI Cards */
+.rev-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+@media(max-width:1100px){.rev-kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.rev-kpi-grid{grid-template-columns:1fr 1fr}}
+.rev-kpi{background:#fff;border-radius:16px;padding:20px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:6px}
+.rev-kpi-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.rev-kpi-val{font-size:1.7rem;font-weight:800;color:var(--fg);font-family:'Montserrat',sans-serif}
+.rev-kpi-val.green{color:#15803d}
+.rev-kpi-val.yellow{color:#D97706}
+.rev-kpi-sub{font-size:.74rem;color:var(--muted)}
+
+/* Charts */
+.rev-charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:800px){.rev-charts-row{grid-template-columns:1fr}}
+.rev-bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-bottom:20px;position:relative}
+.rev-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1}
+.rev-bar{width:100%;background:linear-gradient(to top,var(--primary),var(--teal));border-radius:5px 5px 0 0;min-height:4px;transition:height .6s cubic-bezier(.4,0,.2,1);position:relative;cursor:pointer}
+.rev-bar:hover{opacity:.85}
+.rev-bar-tip{position:absolute;top:-28px;left:50%;transform:translateX(-50%);background:var(--sidebar);color:#fff;font-size:.66rem;padding:3px 6px;border-radius:5px;white-space:nowrap;opacity:0;transition:.2s;pointer-events:none}
+.rev-bar:hover .rev-bar-tip{opacity:1}
+.rev-bar-lbl{font-size:.65rem;color:var(--muted);margin-top:3px;text-align:center}
+
+/* Table */
+.rev-table{width:100%;border-collapse:collapse}
+.rev-table th{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:10px 14px;border-bottom:2px solid var(--border);text-align:left;white-space:nowrap}
+.rev-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:.84rem;vertical-align:middle}
+.rev-table tbody tr:hover{background:var(--bg)}
+.rev-total-row td{font-weight:800;background:#F0FDF4!important;color:#15803d}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Umsatz & Statistik</div>
+    </div>
+    <div class="pro-topbar-right">
+      <button class="pro-btn pro-btn-outline" onclick="window.print()" style="font-size:.82rem"><i class="fa-solid fa-print"></i> Drucken</button>
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Admin</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div class="pro-mob-title"><h1>Umsatz</h1></div>
+
+    <!-- KPI Cards -->
+    <div class="rev-kpi-grid" id="stat-cards">
+      <div class="rev-kpi"><div class="rev-kpi-label">Laden…</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="rev-charts-row">
+      <div class="pro-card" style="margin-bottom:0">
+        <div class="pro-card-hd"><h3><i class="fa-solid fa-chart-bar" style="color:var(--primary)"></i> Umsatz 6 Monate</h3></div>
+        <div class="rev-bar-chart" id="rev-chart" style="padding:16px 16px 24px">
+          <div style="color:var(--muted);font-size:.85rem"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+      <div class="pro-card" style="margin-bottom:0">
+        <div class="pro-card-hd"><h3><i class="fa-solid fa-crown" style="color:#F59E0B"></i> Top Kunden</h3></div>
+        <div id="top-clients-list" style="padding:0 4px">
+          <div style="color:var(--muted);padding:20px;font-size:.85rem"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="pro-card">
+      <div class="pro-card-hd">
+        <h3>Rechnungsübersicht <span id="invoice-count" style="font-size:12px;color:var(--muted);font-weight:500"></span></h3>
+        <div class="pro-filter-bar">
+          <input type="date" id="f-from" onchange="loadReport()"/>
+          <input type="date" id="f-to" onchange="loadReport()"/>
+          <select id="f-status" onchange="loadReport()">
+            <option value="Bezahlt">Bezahlt</option>
+            <option value="Ausstehend">Ausstehend</option>
+            <option value="">Alle</option>
+          </select>
+          <button class="pro-btn pro-btn-outline" style="font-size:.8rem" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div class="pro-table-wrap">
+        <table class="rev-table">
+          <thead><tr>
+            <th>Rechnungs-Nr.</th><th>Kunde</th><th>Leistung</th>
+            <th>Betrag</th><th>Datum</th><th>Status</th>
+          </tr></thead>
+          <tbody id="rev-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px"><button class="pro-pwa-install">Installieren</button><button class="pro-pwa-close">✕</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let currentUserId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('umsatz.html');
+  if (!auth) return;
+  if (auth.profile.role !== 'admin') { window.location.href = 'dashboard.html'; return; }
+  currentUserId = auth.user.id;
+  await Promise.all([loadStats(), loadRevChart(), loadTopClients(), loadReport()]);
+});
+
+async function loadStats() {
+  const stats  = await DB.getStats();
+  const allInv = await DB.getRevenueReport({ all: true });
+  const pending   = allInv.filter(i => i.status === 'Ausstehend').reduce((s,i) => s + parseAmt(i.betrag), 0);
+  const now = new Date();
+  const thisMonth = allInv.filter(i => {
+    const d = new Date(i.created_at);
+    return i.status === 'Bezahlt' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).reduce((s,i) => s + parseAmt(i.betrag), 0);
+  const avg = stats.doneOrders > 0 ? stats.revenue / stats.doneOrders : 0;
+
+  document.getElementById('stat-cards').innerHTML = `
+    <div class="rev-kpi">
+      <div class="rev-kpi-label"><i class="fa-solid fa-euro-sign" style="margin-right:4px"></i>Gesamtumsatz</div>
+      <div class="rev-kpi-val green">€ ${fmt(stats.revenue)}</div>
+      <div class="rev-kpi-sub">Bezahlte Rechnungen</div>
+    </div>
+    <div class="rev-kpi">
+      <div class="rev-kpi-label"><i class="fa-solid fa-clock" style="margin-right:4px"></i>Ausstehend</div>
+      <div class="rev-kpi-val yellow">€ ${fmt(pending)}</div>
+      <div class="rev-kpi-sub">Noch nicht bezahlt</div>
+    </div>
+    <div class="rev-kpi">
+      <div class="rev-kpi-label"><i class="fa-solid fa-calendar" style="margin-right:4px"></i>Diesen Monat</div>
+      <div class="rev-kpi-val">€ ${fmt(thisMonth)}</div>
+      <div class="rev-kpi-sub">${now.toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</div>
+    </div>
+    <div class="rev-kpi">
+      <div class="rev-kpi-label"><i class="fa-solid fa-chart-simple" style="margin-right:4px"></i>Ø pro Auftrag</div>
+      <div class="rev-kpi-val">€ ${fmt(avg)}</div>
+      <div class="rev-kpi-sub">Durchschnitt</div>
+    </div>`;
+}
+
+async function loadRevChart() {
+  const data = await DB.getRevenueByMonth();
+  const el = document.getElementById('rev-chart');
+  if (!data.length) { el.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Keine Daten.</span>'; return; }
+  const max = Math.max(...data.map(d => d.amount), 1);
+  el.innerHTML = data.map(d => `
+    <div class="rev-bar-wrap">
+      <div class="rev-bar" style="height:${Math.max(4,(d.amount/max)*100)}px">
+        <div class="rev-bar-tip">€ ${fmt(d.amount)}</div>
+      </div>
+      <div class="rev-bar-lbl">${d.label}</div>
+    </div>`).join('');
+}
+
+async function loadTopClients() {
+  const allOrders = await DB.getOrders();
+  const allInv    = await DB.getRevenueReport({ all: true });
+  const clientMap = {};
+  allOrders.forEach(o => {
+    if (!o.client) return;
+    if (!clientMap[o.client_id]) clientMap[o.client_id] = { name: o.client.vorname+' '+o.client.nachname, count: 0, revenue: 0 };
+    clientMap[o.client_id].count++;
+  });
+  allInv.filter(i => i.status === 'Bezahlt').forEach(inv => {
+    const cid = inv.order?.client_id;
+    if (cid && clientMap[cid]) clientMap[cid].revenue += parseAmt(inv.betrag);
+  });
+  const sorted = Object.values(clientMap).sort((a,b) => b.revenue - a.revenue).slice(0, 6);
+  const maxRev = Math.max(...sorted.map(c => c.revenue), 1);
+  const el = document.getElementById('top-clients-list');
+  el.innerHTML = sorted.length ? sorted.map((c,i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <span style="font-weight:800;font-size:.78rem;color:var(--primary);min-width:20px">#${i+1}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fg)">${escHtml(c.name)}</div>
+        <div style="background:var(--primary);height:3px;border-radius:2px;width:${(c.revenue/maxRev)*100}%;margin-top:5px;transition:width .5s"></div>
+      </div>
+      <span style="font-size:.8rem;font-weight:800;color:#15803d;white-space:nowrap">€ ${fmt(c.revenue)}</span>
+    </div>`).join('')
+  : '<p style="color:var(--muted);font-size:.82rem;padding:10px 0">Keine Daten.</p>';
+}
+
+async function loadReport() {
+  const from   = document.getElementById('f-from').value;
+  const to     = document.getElementById('f-to').value;
+  const status = document.getElementById('f-status').value;
+  const filters = {};
+  if (from)   filters.from   = from;
+  if (to)     filters.to     = to;
+  if (status) filters.status = status;
+  else        filters.all    = true;
+  const invoices = await DB.getRevenueReport(filters);
+  const total = invoices.filter(i => i.status === 'Bezahlt').reduce((s,i) => s + parseAmt(i.betrag), 0);
+  document.getElementById('invoice-count').textContent = `— ${invoices.length} Einträge · Gesamt: € ${fmt(total)}`;
+  const tbody = document.getElementById('rev-tbody');
+  tbody.innerHTML = invoices.length ? invoices.map(inv => {
+    const client = inv.order?.client || null;
+    const sClass = inv.status === 'Bezahlt' ? 'pb-done' : inv.status === 'Storniert' ? 'pb-cancel' : 'pb-ausstehend';
+    return `<tr>
+      <td><strong style="font-family:monospace">${escHtml(inv.invoice_number)}</strong></td>
+      <td>${client ? escHtml(client.vorname+' '+client.nachname) : '—'}<br><span style="font-size:.72rem;color:var(--muted)">${client?.email||''}</span></td>
+      <td style="font-size:.82rem;color:var(--muted)">${escHtml(inv.order?.service||'—')}</td>
+      <td><strong style="color:${inv.status==='Bezahlt'?'#15803d':'var(--fg)'}">€ ${escHtml((inv.betrag||'').replace('€ ',''))}</strong></td>
+      <td style="font-size:.82rem">${inv.datum ? new Date(inv.datum).toLocaleDateString('de-DE') : '—'}</td>
+      <td><span class="pro-badge ${sClass}">${escHtml(inv.status)}</span></td>
+    </tr>`;
+  }).join('')
+  + (total > 0 ? `<tr class="rev-total-row"><td colspan="3" style="text-align:right;font-size:.84rem">Gesamtumsatz (bezahlt):</td><td colspan="3" style="font-size:.95rem">€ ${fmt(total)}</td></tr>` : '')
+  : `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Keine Daten gefunden.</td></tr>`;
+}
+
+function clearFilters() {
+  document.getElementById('f-from').value   = '';
+  document.getElementById('f-to').value     = '';
+  document.getElementById('f-status').value = 'Bezahlt';
+  loadReport();
+}
+
+function parseAmt(str) { return parseFloat((str||'').replace(/[^0-9.,]/g,'').replace(',','.')) || 0; }
+function fmt(n) { return Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

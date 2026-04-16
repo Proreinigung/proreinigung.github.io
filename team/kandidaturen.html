@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Kandidaturen — Proreinigung Team</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+.kand-card{background:#fff;border-radius:14px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.kand-card.k-Neu{border-left:4px solid #F59E0B}
+.kand-card.k-Ausstehend{border-left:4px solid var(--primary)}
+.kand-card.k-Eingeladen{border-left:4px solid #16a34a}
+.kand-card.k-Akzeptiert{border-left:4px solid #15803d}
+.kand-card.k-Abgelehnt{border-left:4px solid #EF4444;opacity:.85}
+.kand-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:.15s}
+.kand-header:hover{background:var(--bg)}
+.kand-foto{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--border);flex-shrink:0}
+.kand-foto-placeholder{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1rem;flex-shrink:0}
+.kand-info{flex:1;min-width:0}
+.kand-name{font-weight:700;font-size:.88rem;color:var(--fg);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.kand-sub{font-size:.74rem;color:var(--muted);margin-top:2px}
+.kand-detail{display:none;padding:20px;border-top:1px solid var(--border);background:var(--bg);animation:fadeD .18s ease}
+@keyframes fadeD{from{opacity:0;transform:translateY(-4px)}}
+.kand-detail.open{display:block}
+.kand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px}
+.kand-field{font-size:.84rem}
+.kand-field label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+.kand-text-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.88rem;line-height:1.7;color:var(--fg);white-space:pre-wrap;margin-bottom:12px}
+.kand-note{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:.85rem;resize:vertical;min-height:66px;font-family:inherit;color:var(--fg);background:#fff;outline:none;transition:.2s}
+.kand-note:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,101,192,.08)}
+.kand-action-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.kand-file-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:.83rem;font-weight:600;text-decoration:none;transition:.18s}
+.kand-cv{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff}
+.kand-foto-btn{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
+.kand-stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.kand-stat-pill{padding:7px 14px;border-radius:24px;font-size:.8rem;font-weight:700;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:.18s;color:var(--muted)}
+.kand-stat-pill:hover,.kand-stat-pill.active{background:var(--sidebar);color:#fff;border-color:var(--sidebar)}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Kandidaturen</div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content">
+    <div class="pro-mob-title"><h1>Kandidaturen</h1></div>
+
+    <!-- Stats pills -->
+    <div class="kand-stats-row" id="stats-row">
+      <span class="kand-stat-pill active" onclick="filterStatus(this,'')">📋 Alle <span id="sc-all">0</span></span>
+      <span class="kand-stat-pill" onclick="filterStatus(this,'Neu')">🆕 Neu <span id="sc-neu">0</span></span>
+      <span class="kand-stat-pill" onclick="filterStatus(this,'Ausstehend')">⏳ Ausstehend <span id="sc-aus">0</span></span>
+      <span class="kand-stat-pill" onclick="filterStatus(this,'Eingeladen')">📅 Eingeladen <span id="sc-ein">0</span></span>
+      <span class="kand-stat-pill" onclick="filterStatus(this,'Akzeptiert')">✅ Akzeptiert <span id="sc-ak">0</span></span>
+      <span class="kand-stat-pill" onclick="filterStatus(this,'Abgelehnt')">❌ Abgelehnt <span id="sc-ab">0</span></span>
+    </div>
+
+    <div class="pro-card">
+      <div class="pro-card-hd">
+        <h3>Alle Bewerbungen <span id="total-badge" style="font-size:12px;color:var(--muted);font-weight:500"></span></h3>
+        <div class="pro-filter-bar">
+          <select id="f-status" onchange="loadApps()">
+            <option value="">Alle Status</option>
+            <option value="Neu">Neu</option>
+            <option value="Ausstehend">Ausstehend</option>
+            <option value="Eingeladen">Eingeladen</option>
+            <option value="Akzeptiert">Akzeptiert</option>
+            <option value="Abgelehnt">Abgelehnt</option>
+          </select>
+          <select id="f-stelle" onchange="loadApps()">
+            <option value="">Alle Stellen</option>
+            <option>Reinigungskraft — Büroreinigung</option>
+            <option>Industriereiniger</option>
+            <option>Teamleiter Reinigung</option>
+            <option>Reinigungshilfe (Minijob)</option>
+            <option>Glasreiniger / Höhenarbeiter</option>
+            <option>Initiativbewerbung</option>
+          </select>
+          <input type="text" id="f-search" placeholder="Name / E-Mail…" oninput="filterLocal()" style="width:180px"/>
+        </div>
+      </div>
+      <div id="kand-list">
+        <div style="text-align:center;padding:50px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px"><button class="pro-pwa-install">Installieren</button><button class="pro-pwa-close">✕</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let me = null;
+let currentUserId = null;
+let allApps = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('kandidaturen.html');
+  if (!auth) return;
+  me = auth.profile;
+  currentUserId = auth.user.id;
+
+  await loadApps();
+
+  sb.channel('kand_watch')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'applications' }, (payload) => {
+      proPlaySound();
+      proToast(`📋 Neue Bewerbung: ${payload.new.vorname} ${payload.new.nachname} — ${payload.new.stelle}`, 'info');
+      loadApps();
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'applications' }, () => loadApps())
+    .subscribe();
+});
+
+async function loadApps() {
+  const statusFilter = document.getElementById('f-status').value;
+  const stelleFilter = document.getElementById('f-stelle').value;
+  const filters = {};
+  if (statusFilter) filters.status = statusFilter;
+  if (stelleFilter) filters.stelle = stelleFilter;
+  allApps = await DB.getApplications(filters);
+  updateStats();
+  renderApps(allApps);
+}
+
+function updateStats() {
+  const cnt = s => allApps.filter(a => a.status === s).length;
+  document.getElementById('sc-all').textContent = allApps.length;
+  document.getElementById('sc-neu').textContent = cnt('Neu');
+  document.getElementById('sc-aus').textContent = cnt('Ausstehend');
+  document.getElementById('sc-ein').textContent = cnt('Eingeladen');
+  document.getElementById('sc-ak').textContent  = cnt('Akzeptiert');
+  document.getElementById('sc-ab').textContent  = cnt('Abgelehnt');
+  const n = allApps.length;
+  document.getElementById('total-badge').textContent = n ? `— ${n} Bewerbungen` : '';
+}
+
+function filterStatus(el, status) {
+  document.querySelectorAll('.kand-stat-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('f-status').value = status;
+  loadApps();
+}
+
+function filterLocal() {
+  const q = document.getElementById('f-search').value.toLowerCase();
+  if (!q) { renderApps(allApps); return; }
+  renderApps(allApps.filter(a =>
+    (`${a.vorname} ${a.nachname}`).toLowerCase().includes(q) ||
+    (a.email||'').toLowerCase().includes(q) ||
+    (a.stelle||'').toLowerCase().includes(q)
+  ));
+}
+
+function renderApps(list) {
+  const container = document.getElementById('kand-list');
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted)">
+      <div style="font-size:3rem;margin-bottom:12px">📭</div>
+      <p>Keine Bewerbungen gefunden.</p>
+    </div>`;
+    return;
+  }
+  container.innerHTML = list.map(a => {
+    const initials = ((a.vorname||'?')[0]+(a.nachname||'?')[0]).toUpperCase();
+    const date = new Date(a.created_at).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const time = new Date(a.created_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const handlerName = a.handler ? `${a.handler.vorname} ${a.handler.nachname}` : null;
+    return `<div class="kand-card k-${a.status}" id="kc-${a.id}">
+      <div class="kand-header" onclick="toggleKand('${a.id}')">
+        ${a.foto_url ? `<img class="kand-foto" src="${escHtml(a.foto_url)}" alt="">` : `<div class="kand-foto-placeholder">${initials}</div>`}
+        <div class="kand-info">
+          <div class="kand-name">
+            ${escHtml(a.vorname)} ${escHtml(a.nachname)}
+            ${statusBadge(a.status)}
+            ${handlerName ? `<small style="color:var(--muted);font-weight:400"><i class="fa-solid fa-user" style="font-size:.6rem"></i> ${escHtml(handlerName)}</small>` : ''}
+          </div>
+          <div class="kand-sub">${escHtml(a.stelle)} · ${escHtml(a.email)} · ${date} ${time}</div>
+        </div>
+        <i class="fa-solid fa-chevron-down" style="color:var(--muted);font-size:.78rem;transition:.2s" id="chev-${a.id}"></i>
+      </div>
+      <div class="kand-detail" id="kd-${a.id}">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+          ${a.foto_url ? `<img src="${escHtml(a.foto_url)}" style="width:100px;height:120px;border-radius:10px;object-fit:cover;border:2px solid var(--border)">` : ''}
+          <div style="flex:1;min-width:180px">
+            <div class="kand-grid">
+              <div class="kand-field"><label>Vorname</label>${escHtml(a.vorname)}</div>
+              <div class="kand-field"><label>Nachname</label>${escHtml(a.nachname)}</div>
+              <div class="kand-field"><label>E-Mail</label><a href="mailto:${escHtml(a.email)}" style="color:var(--primary)">${escHtml(a.email)}</a></div>
+              <div class="kand-field"><label>Telefon</label>${a.telefon ? `<a href="tel:${escHtml(a.telefon)}" style="color:var(--primary)">${escHtml(a.telefon)}</a>` : '—'}</div>
+              <div class="kand-field"><label>Geburtsdatum</label>${a.geburtsdatum ? new Date(a.geburtsdatum).toLocaleDateString('de-DE') : '—'}</div>
+              <div class="kand-field"><label>Wohnort</label>${escHtml(a.wohnort||'—')}</div>
+              <div class="kand-field"><label>Stelle</label><strong>${escHtml(a.stelle)}</strong></div>
+              <div class="kand-field"><label>Verfügbar ab</label>${a.verfuegbar ? new Date(a.verfuegbar).toLocaleDateString('de-DE') : '—'}</div>
+              <div class="kand-field"><label>Erfahrung</label>${escHtml(a.erfahrung||'—')}</div>
+              <div class="kand-field"><label>Eingegangen</label>${date}</div>
+            </div>
+          </div>
+        </div>
+        ${a.motivation ? `<div style="margin-bottom:12px"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px">Motivationsschreiben</div><div class="kand-text-box">${escHtml(a.motivation)}</div></div>` : ''}
+        ${a.kommentar ? `<div style="margin-bottom:12px"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px">Zusätzliche Informationen</div><div class="kand-text-box" style="background:#FFFBEB;border-color:#FDE68A">${escHtml(a.kommentar)}</div></div>` : ''}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          ${a.cv_url ? `<a href="${escHtml(a.cv_url)}" target="_blank" download="${escHtml(a.cv_name||'Lebenslauf')}" class="kand-file-btn kand-cv"><i class="fa-solid fa-file-pdf"></i> Lebenslauf</a>` : `<span style="color:var(--muted);font-size:.82rem">Kein CV</span>`}
+          ${a.foto_url ? `<a href="${escHtml(a.foto_url)}" target="_blank" class="kand-file-btn kand-foto-btn"><i class="fa-solid fa-image"></i> Foto</a>` : ''}
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:6px"><i class="fa-solid fa-lock"></i> Interne Notiz</label>
+          <textarea class="kand-note" id="knote-${a.id}" placeholder="Notiz (nur für Admin)…">${escHtml(a.internal_note||'')}</textarea>
+          <button onclick="saveNote('${a.id}')" class="pro-btn pro-btn-outline" style="margin-top:6px;font-size:.8rem"><i class="fa-solid fa-floppy-disk"></i> Notiz speichern</button>
+        </div>
+        <div class="kand-action-row">
+          <select class="pro-input" style="width:auto;padding:6px 10px;font-size:.8rem" onchange="changeStatus('${a.id}',this.value)">
+            <option value="Neu"        ${a.status==='Neu'        ?'selected':''}>Neu</option>
+            <option value="Ausstehend" ${a.status==='Ausstehend' ?'selected':''}>Ausstehend</option>
+            <option value="Eingeladen" ${a.status==='Eingeladen' ?'selected':''}>Eingeladen</option>
+            <option value="Akzeptiert" ${a.status==='Akzeptiert' ?'selected':''}>Akzeptiert ✅</option>
+            <option value="Abgelehnt"  ${a.status==='Abgelehnt'  ?'selected':''}>Abgelehnt ❌</option>
+          </select>
+          <button onclick="changeStatus('${a.id}','Eingeladen')" class="pro-btn" style="font-size:.8rem;background:#16a34a"><i class="fa-solid fa-calendar-check"></i> Einladen</button>
+          <button onclick="changeStatus('${a.id}','Akzeptiert')" class="pro-btn" style="font-size:.8rem;background:#15803d"><i class="fa-solid fa-check"></i> Akzeptieren</button>
+          <button onclick="changeStatus('${a.id}','Abgelehnt')" class="pro-btn" style="font-size:.8rem;background:#DC2626"><i class="fa-solid fa-xmark"></i> Ablehnen</button>
+          <a href="mailto:${escHtml(a.email)}?subject=Ihre Bewerbung bei Proreinigung — ${encodeURIComponent(a.stelle)}&body=Sehr geehrte/r ${encodeURIComponent(a.vorname)} ${encodeURIComponent(a.nachname)},%0A%0A" target="_blank" class="pro-btn" style="font-size:.8rem"><i class="fa-solid fa-envelope"></i> E-Mail</a>
+          ${a.telefon ? `<a href="https://wa.me/${(a.telefon||'').replace(/\D/g,'')}" target="_blank" class="pro-btn" style="font-size:.8rem;background:#25D366"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
+          <button onclick="deleteApp('${a.id}')" class="pro-btn" style="font-size:.8rem;background:#EF4444;margin-left:auto"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleKand(id) {
+  const detail = document.getElementById('kd-' + id);
+  const chev   = document.getElementById('chev-' + id);
+  detail.classList.toggle('open');
+  if (chev) chev.style.transform = detail.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+async function changeStatus(id, status) {
+  const updates = { status };
+  if (!allApps.find(a=>a.id===id)?.handled_by) updates.handled_by = me.id;
+  const res = await DB.updateApplication(id, updates);
+  if (res.ok) { proToast('Status: ' + status, 'success'); await loadApps(); }
+  else proToast(res.msg, 'error');
+}
+
+async function saveNote(id) {
+  const note = document.getElementById('knote-' + id).value;
+  const res = await DB.updateApplication(id, { internal_note: note });
+  if (res.ok) proToast('Notiz gespeichert.', 'success');
+  else proToast(res.msg, 'error');
+}
+
+async function deleteApp(id) {
+  if (!confirm('Diese Bewerbung wirklich löschen? Kann nicht rückgängig gemacht werden.')) return;
+  const res = await DB.deleteApplication(id);
+  if (res.ok) {
+    document.getElementById('kc-' + id)?.remove();
+    allApps = allApps.filter(a => a.id !== id);
+    updateStats();
+    proToast('Bewerbung gelöscht.', 'success');
+  } else proToast(res.msg, 'error');
+}
+
+function statusBadge(s) {
+  const map = { Neu:'pb-neu', Ausstehend:'pb-ausstehend', Eingeladen:'pb-aktiv', Akzeptiert:'pb-done', Abgelehnt:'pb-abgelehnt' };
+  return `<span class="pro-badge ${map[s]||'pb-info'}">${escHtml(s||'—')}</span>`;
+}
+
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

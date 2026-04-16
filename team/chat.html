@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<link rel="manifest" href="../manifest.json"/>
+<title>Team Chat — Proreinigung</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="../css/team-pro.css"/>
+<style>
+/* ── Chat-specific layout ── */
+/* Lock the whole page to the viewport — no page scroll on chat */
+html,body{height:100%;overflow:hidden}
+.pro-main{height:100%;min-height:unset;overflow:hidden}
+
+/* Desktop: chat-wrap gets exact height = viewport - topbar(64px) - content-padding(32px) */
+.pro-content{padding:16px!important;overflow:hidden}
+.pro-chat-wrap{
+  display:flex;
+  height:calc(100vh - 64px - 32px);
+  overflow:hidden;
+  border-radius:16px;background:var(--card);box-shadow:var(--shadow)
+}
+
+/* Mobile: chat-wrap = full dvh - mobile header - bottom nav */
+@media(max-width:900px){
+  .pro-content{padding:0!important;overflow:hidden}
+  .pro-chat-wrap{
+    border-radius:0;box-shadow:none;
+    height:calc(100dvh - var(--mob-h) - env(safe-area-inset-top,0px) - var(--bot-h) - var(--safe))
+  }
+}
+
+/* Members panel */
+.pro-chat-members{width:240px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--border);background:#fff}
+@media(max-width:640px){.pro-chat-members{width:100%;position:fixed;top:56px;left:0;right:0;bottom:72px;z-index:200;display:none}.pro-chat-members.open{display:flex}}
+
+/* Chat tabs */
+.pro-chat-tabs{display:flex;border-bottom:2px solid var(--border);flex-shrink:0}
+.pro-chat-tab{flex:1;padding:13px 8px;font-size:.82rem;font-weight:700;border:none;background:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+.pro-chat-tab.active{color:var(--primary);border-bottom-color:var(--primary);background:rgba(21,101,192,.04)}
+.pro-chat-tab:hover:not(.active){color:var(--primary);background:rgba(21,101,192,.04)}
+
+.pro-chat-panel{flex:1;overflow-y:auto;padding:6px 0}
+.pro-chat-section-hd{padding:6px 14px 2px;font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+/* Member row */
+.pro-member-row{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-radius:10px;margin:2px 6px;transition:.18s;position:relative}
+.pro-member-row:hover{background:rgba(21,101,192,.06)}
+.pro-member-row.active{background:rgba(21,101,192,.1);border-left:3px solid var(--primary)}
+.pro-member-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem;flex-shrink:0;overflow:hidden;position:relative}
+.pro-member-av img{width:100%;height:100%;object-fit:cover}
+.pro-member-dot{position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#6b7280;border:2px solid #fff}
+.pro-member-dot.online{background:#22c55e}
+.pro-member-info{flex:1;min-width:0}
+.pro-member-name{font-size:.82rem;font-weight:600;color:var(--fg)}
+.pro-member-sub{font-size:.7rem;color:var(--muted)}
+.pro-member-badge{min-width:18px;height:18px;background:#F59E0B;color:#fff;border-radius:999px;font-size:.62rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0}
+
+/* Tab badge */
+.pro-tab-badge{min-width:16px;height:16px;background:#F59E0B;color:#fff;border-radius:999px;font-size:.6rem;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px}
+.pro-tab-badge.show{display:flex}
+
+/* Chat area */
+.pro-chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F8FAFF}
+.pro-chat-hd{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);background:#fff;flex-shrink:0}
+.pro-chat-hd-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;overflow:hidden}
+.pro-chat-hd-av img{width:100%;height:100%;object-fit:cover}
+.pro-chat-hd-name{font-size:.95rem;font-weight:700;color:var(--fg)}
+.pro-chat-hd-sub{font-size:.72rem;color:var(--muted)}
+.pro-chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;justify-content:flex-end;max-height:none!important}
+
+/* Bubbles */
+.pro-bubble-wrap{display:flex;align-items:flex-end;gap:8px;max-width:78%;animation:fadeIn .15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}}
+.pro-bubble-wrap.me{align-self:flex-end;flex-direction:row-reverse}
+.pro-bubble-wrap.them{align-self:flex-start}
+.pro-bubble-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0;overflow:hidden}
+.pro-bubble-av img{width:100%;height:100%;object-fit:cover}
+.pro-bubble-body{}
+.pro-bubble-sender{font-size:.68rem;font-weight:700;color:var(--teal);margin-bottom:3px}
+.pro-bubble{padding:9px 14px;border-radius:18px;font-size:.87rem;line-height:1.5;word-break:break-word}
+.pro-bubble-wrap.me .pro-bubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.pro-bubble-wrap.them .pro-bubble{background:#fff;color:var(--fg);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.pro-bubble-time{font-size:.62rem;color:var(--muted);margin-top:3px;text-align:right}
+.pro-bubble-wrap.them .pro-bubble-time{text-align:left}
+.pro-chat-file-img{max-width:180px;max-height:140px;border-radius:10px;display:block;object-fit:cover;cursor:pointer}
+.pro-chat-file-pdf{display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;color:#92400E;text-decoration:none}
+.pro-chat-file-other{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;color:var(--primary);text-decoration:none}
+
+/* Input */
+.pro-chat-input-wrap{padding:10px 14px;border-top:none;background:#fff;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;flex-direction:row;flex-wrap:nowrap}
+.pro-chat-file-strip{padding:6px 14px;background:#EFF6FF;border-top:1px solid #BFDBFE;display:none;align-items:center;gap:8px;font-size:.8rem;flex-shrink:0}
+.pro-chat-file-strip.show{display:flex}
+.pro-chat-input{flex:1;padding:9px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;font-size:.88rem;color:var(--fg);outline:none;transition:border .2s;resize:none;min-height:38px;max-height:200px;line-height:1.5;overflow-y:auto;font-family:inherit}
+.pro-chat-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,101,192,.08)}
+
+/* Input zone */
+.pro-chat-input-zone{
+  display:flex;flex-direction:column;flex-shrink:0;
+  background:#fff;border-top:1px solid var(--border);
+}
+.pro-chat-attach{width:34px;height:34px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:.85rem;transition:.2s;flex-shrink:0}
+.pro-chat-attach:hover{background:#EFF6FF;color:var(--primary);border-color:var(--primary)}
+.pro-chat-send{width:36px;height:36px;border-radius:50%;background:var(--primary);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:.85rem;transition:.2s;flex-shrink:0}
+.pro-chat-send:hover{background:var(--primary-dark)}
+.pro-chat-send:disabled{opacity:.4;cursor:not-allowed}
+
+/* Empty chat */
+.pro-chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:40px;gap:10px}
+.pro-chat-empty-icon{font-size:3rem}
+
+/* New message floating alert */
+.pro-msg-alert{position:fixed;bottom:86px;right:20px;background:var(--sidebar);color:#fff;border-radius:14px;padding:10px 16px;font-size:.84rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.3);z-index:9999;display:none;align-items:center;gap:10px;max-width:300px;cursor:pointer;animation:slideR .3s ease}
+@keyframes slideR{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.pro-msg-alert.show{display:flex}
+.pro-msg-alert-type{font-size:.65rem;padding:2px 7px;border-radius:999px;font-weight:800;flex-shrink:0}
+.pro-msg-alert-type.group{background:#25D366;color:#fff}
+.pro-msg-alert-type.private{background:#F59E0B;color:#fff}
+
+/* Profile modal */
+.pro-profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center}
+.pro-profile-modal.open{display:flex}
+.pro-profile-box{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:340px;text-align:center;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.pro-pm-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.6rem;font-weight:800;margin:0 auto 12px;overflow:hidden}
+.pro-pm-av img{width:100%;height:100%;object-fit:cover}
+.pro-pm-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)}
+
+/* Mobile members toggle */
+.pro-chat-mob-toggle{display:none}
+@media(max-width:640px){
+  .pro-chat-mob-toggle{display:flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border-bottom:1px solid var(--border);font-size:.82rem;font-weight:600;cursor:pointer;color:var(--primary);flex-shrink:0}
+  .pro-chat-members{position:fixed;top:56px;left:0;right:0;bottom:72px;z-index:200;display:none;width:100%}
+  .pro-chat-members.open{display:flex}
+}
+</style>
+</head>
+<body>
+
+<div id="pro-loading" class="pro-loading">
+  <div class="pro-spinner"></div>
+  <span style="font-size:14px;color:var(--muted);font-weight:600">Wird geladen…</span>
+</div>
+<div id="pro-toasts"></div>
+
+<!-- Mobile Header -->
+<header class="pro-mob-hd">
+  <button class="pro-mob-menu" id="pro-mob-menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="pro-mob-logo"><div class="pro-mob-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div><span>Proreinigung</span></div>
+  <div class="pro-mob-right">
+    <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+    <div class="pro-user-av" id="pro-mob-av"></div>
+  </div>
+</header>
+
+<div class="pro-overlay" id="pro-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="pro-sidebar" id="pro-sidebar">
+  <div class="pro-sb-logo">
+    <div class="pro-sb-logo-ic"><img src="../assets/images/Logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:6px"></div>
+    <div><span class="pro-sb-logo-text">Proreinigung</span><span class="pro-sb-logo-sub">Team Portal</span></div>
+  </div>
+  <div class="pro-sb-user">
+    <div class="pro-sb-user-av" id="pro-sb-av"></div>
+    <div><div class="pro-sb-user-name" id="pro-sb-name">—</div><div class="pro-sb-user-role" id="pro-sb-role">Team</div></div>
+  </div>
+  <nav class="pro-sb-nav">
+    <span class="pro-sb-label">Hauptmenü</span>
+    <a href="dashboard.html" class="pro-sb-link"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a href="orders.html" class="pro-sb-link"><i class="fa-solid fa-clipboard-list"></i>Aufträge</a>
+    <a href="chat.html" class="pro-sb-link"><i class="fa-solid fa-comments"></i>Team-Chat<span class="pro-sb-badge pro-chat-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider"></div>
+    <span class="pro-sb-label">Verwaltung</span>
+    <a href="nachrichten.html" class="pro-sb-link"><i class="fa-solid fa-envelope"></i>Nachrichten</a>
+    <a href="umsatz.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-chart-line"></i>Umsatz</a>
+    <a href="kandidaturen.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-user-plus"></i>Bewerbungen<span class="pro-sb-badge pro-app-count" style="display:none">0</span></a>
+    <div class="pro-sb-divider pro-admin-only pro-admin-block" style="display:none"></div>
+    <span class="pro-sb-label pro-admin-only" style="display:none">Admin</span>
+    <a href="admin.html" class="pro-sb-link pro-admin-only" style="display:none"><i class="fa-solid fa-shield-halved"></i>Admin-Bereich</a>
+    <div class="pro-sb-divider"></div>
+    <a href="profil.html" class="pro-sb-link"><i class="fa-solid fa-user"></i>Profil</a>
+  </nav>
+  <div class="pro-sb-footer">
+    <button class="pro-sb-logout pro-logout-btn"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="pro-main">
+
+  <!-- Topbar -->
+  <header class="pro-topbar">
+    <div class="pro-topbar-left">
+      <div class="pro-topbar-title">Team Chat</div>
+      <div style="font-size:.8rem;color:var(--muted)" id="online-label">…</div>
+    </div>
+    <div class="pro-topbar-right">
+      <div class="pro-notif-wrap">
+        <button class="pro-icon-btn" id="pro-notif-btn"><i class="fa-regular fa-bell"></i><span class="pro-badge pro-notif-count" style="display:none">0</span></button>
+        <div class="pro-notif-pop" id="pro-notif-pop">
+          <div class="pro-notif-hd"><h4>Benachrichtigungen</h4><button onclick="proMarkAllRead(currentUserId)">Alle gelesen</button></div>
+          <div id="pro-notif-list"><div class="pro-notif-empty">Keine Meldungen</div></div>
+        </div>
+      </div>
+      <div class="pro-topbar-user">
+        <div class="pro-topbar-user-av" id="pro-topbar-av"></div>
+        <div><div class="pro-topbar-uname" id="pro-topbar-name">—</div><div class="pro-topbar-urole" id="pro-topbar-role">Team</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="pro-content" style="display:flex;flex-direction:column">
+
+    <div class="pro-chat-wrap">
+
+      <!-- LEFT: Members -->
+      <div class="pro-chat-members" id="chat-members-panel">
+        <div class="pro-chat-tabs">
+          <button class="pro-chat-tab active" id="tab-group" onclick="switchTab('group')">
+            <i class="fa-solid fa-users"></i> Gruppe
+            <span class="pro-tab-badge" id="badge-group"></span>
+          </button>
+          <button class="pro-chat-tab" id="tab-priv" onclick="switchTab('priv')">
+            <i class="fa-solid fa-lock"></i> Privat
+            <span class="pro-tab-badge" id="badge-priv"></span>
+          </button>
+        </div>
+        <div class="pro-chat-panel" id="panel-group">
+          <div class="pro-chat-section-hd">Mitglieder</div>
+          <div id="members-group"></div>
+        </div>
+        <div class="pro-chat-panel" id="panel-priv" style="display:none">
+          <div class="pro-chat-section-hd">Direkt schreiben</div>
+          <div id="members-priv"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Chat area -->
+      <div class="pro-chat-area">
+
+        <!-- Mobile: toggle members -->
+        <div class="pro-chat-mob-toggle" onclick="toggleMobileMembers()">
+          <i class="fa-solid fa-users" style="font-size:.9rem"></i>
+          <span id="mob-toggle-label">Mitglieder anzeigen</span>
+        </div>
+
+        <!-- Chat header -->
+        <div class="pro-chat-hd" id="chat-hd">
+          <div class="pro-chat-hd-av" id="chat-hd-icon">💬</div>
+          <div>
+            <div class="pro-chat-hd-name" id="chat-hd-name">Team Proreinigung</div>
+            <div class="pro-chat-hd-sub" id="chat-hd-sub">Interner Gruppenchat</div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="pro-chat-msgs" id="chat-messages">
+          <div style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+        </div>
+
+        <!-- Input zone -->
+        <div class="pro-chat-input-zone" id="chat-input-zone">
+
+          <!-- File preview -->
+          <div class="pro-chat-file-strip" id="file-preview">
+            <i class="fa-solid fa-paperclip" style="color:var(--primary)"></i>
+            <span style="flex:1;font-size:.8rem;font-weight:600;color:var(--primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="fp-name"></span>
+            <button onclick="clearFile()" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:1rem;padding:2px 4px">✕</button>
+          </div>
+
+          <!-- Input -->
+          <div class="pro-chat-input-wrap" id="chat-input-wrap">
+            <input type="file" id="file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="handleFileSelect(this)">
+            <button class="pro-chat-attach" onclick="document.getElementById('file-input').click()" title="Datei anhängen" style="flex-shrink:0;margin-bottom:4px">
+              <i class="fa-solid fa-paperclip"></i>
+            </button>
+            <textarea class="pro-chat-input" id="chat-input"
+              placeholder="Nachricht an das Team…"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+              oninput="autoResizeInput(this)"
+              maxlength="2000" rows="1"></textarea>
+            <button class="pro-chat-send" id="chat-send-btn" onclick="sendMsg()" style="flex-shrink:0;margin-bottom:4px">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Empty: no priv selected -->
+        <div class="pro-chat-empty" id="priv-empty" style="display:none">
+          <div class="pro-chat-empty-icon">🔒</div>
+          <strong style="color:var(--fg)">Wähle eine Person</strong>
+          <span style="font-size:.82rem">Klicke links auf einen Mitarbeiter um eine private Konversation zu starten.</span>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="pro-bot-nav">
+    <a href="dashboard.html" class="pro-bot-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="orders.html" class="pro-bot-item"><i class="fa-solid fa-clipboard-list"></i><span>Aufträge</span></a>
+    <a href="chat.html" class="pro-bot-item active"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="nachrichten.html" class="pro-bot-item"><i class="fa-solid fa-bell"></i><span>Nachrichten</span></a>
+    <a href="profil.html" class="pro-bot-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+  </nav>
+
+</div>
+
+<!-- Floating new-message alert -->
+<div class="pro-msg-alert" id="new-msg-alert" onclick="handleAlertClick()">
+  <span id="nma-icon" style="font-size:1.1rem">💬</span>
+  <div style="flex:1;min-width:0">
+    <div style="font-weight:800;font-size:.83rem" id="nma-sender"></div>
+    <div style="font-size:.73rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="nma-preview"></div>
+  </div>
+  <span class="pro-msg-alert-type" id="nma-type">Gruppe</span>
+  <button onclick="event.stopPropagation();hideAlert()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;flex-shrink:0">✕</button>
+</div>
+
+<!-- Profile Modal -->
+<div class="pro-profile-modal" id="profile-modal">
+  <div class="pro-profile-box">
+    <button class="pro-pm-close" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="pro-pm-av" id="pm-avatar">?</div>
+    <div style="font-size:1.1rem;font-weight:800;color:var(--fg);margin-bottom:4px" id="pm-name"></div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:20px" id="pm-role"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap" id="pm-actions"></div>
+    <div id="pm-upload-wrap" style="display:none;margin-top:14px">
+      <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="uploadMyAvatar(this)">
+      <button class="pro-btn pro-btn-outline" style="font-size:.82rem" onclick="document.getElementById('avatar-input').click()"><i class="fa-solid fa-camera"></i> Foto ändern</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA Banner -->
+<div class="pro-pwa">
+  <div><div style="font-weight:700;font-size:.88rem">App installieren</div><div style="font-size:.75rem;opacity:.8">Schneller Zugriff</div></div>
+  <div style="display:flex;gap:8px">
+    <button class="pro-pwa-install">Installieren</button>
+    <button class="pro-pwa-close">✕</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/db.js"></script>
+<script src="../js/realtime.js"></script>
+<script src="../js/pro-layout.js"></script>
+<script>
+let currentProfile = null;
+let currentUser    = null;
+let currentUserId  = null;
+let activeTab      = 'group';
+let privatePerson  = null;
+let selectedFile   = null;
+let allMessages    = [];
+let teamMembers    = [];
+let unreadGroup    = 0;
+let unreadPriv     = {};
+let alertPending   = null;
+let alertTimer     = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = await proPageInit('chat.html');
+  if (!auth) return;
+  currentProfile = auth.profile;
+  currentUser    = auth.user;
+  currentUserId  = auth.user.id;
+
+  teamMembers = await DB.getTeamMembers();
+  renderMembersList();
+  updateOnlineLabel();
+
+  allMessages = await DB.getChatMessages(80);
+
+  // Handle ?tab= from notification click
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam  = urlParams.get('tab');
+  if (tabParam === 'priv') switchTab('priv');
+  else switchTab('group');
+
+  renderChat();
+
+  // Realtime
+  Realtime.subscribeToChat(async (newMsg) => {
+    allMessages = await DB.getChatMessages(80);
+    const isFromMe = newMsg.sender_id === currentUser.id;
+    if (!isFromMe) {
+      const sender = teamMembers.find(m => m.id === newMsg.sender_id);
+      const senderName = sender ? `${sender.vorname} ${sender.nachname}` : 'Jemand';
+      const isPriv = !!newMsg.is_private;
+      const preview = newMsg.file_url ? '📎 Datei' : (newMsg.message||'').substring(0, 50);
+      proPlaySound();
+      if (isPriv) {
+        const isViewing = activeTab === 'priv' && privatePerson?.id === newMsg.sender_id;
+        if (!isViewing) {
+          unreadPriv[newMsg.sender_id] = (unreadPriv[newMsg.sender_id] || 0) + 1;
+          updateBadges();
+          showAlert(senderName, preview, true, newMsg.sender_id);
+        }
+      } else {
+        if (activeTab !== 'group') {
+          unreadGroup++;
+          updateBadges();
+          showAlert(senderName, preview, false, null);
+        }
+      }
+      renderMembersList();
+    }
+    renderChat();
+  });
+});
+
+// ── Tabs ───────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-group').classList.toggle('active', tab === 'group');
+  document.getElementById('tab-priv').classList.toggle('active', tab === 'priv');
+  document.getElementById('panel-group').style.display = tab === 'group' ? 'block' : 'none';
+  document.getElementById('panel-priv').style.display  = tab === 'priv'  ? 'block' : 'none';
+  if (tab === 'group') {
+    unreadGroup = 0;
+    updateBadges();
+    privatePerson = null;
+    document.getElementById('chat-hd-icon').innerHTML = '💬';
+    document.getElementById('chat-hd-name').textContent = 'Team Proreinigung';
+    document.getElementById('chat-hd-sub').textContent  = 'Interner Gruppenchat';
+    document.getElementById('chat-input').placeholder   = 'Nachricht an das Team…';
+    document.getElementById('chat-input-wrap').style.display = 'flex';
+    document.getElementById('priv-empty').style.display = 'none';
+  } else {
+    if (!privatePerson) showPrivEmpty();
+  }
+  renderChat();
+}
+
+function showPrivEmpty() {
+  document.getElementById('chat-input-wrap').style.display = 'none';
+  document.getElementById('priv-empty').style.display = 'flex';
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('chat-hd-icon').innerHTML = '🔒';
+  document.getElementById('chat-hd-name').textContent = 'Privatchat';
+  document.getElementById('chat-hd-sub').textContent  = 'Wähle eine Person links';
+}
+
+function openDM(memberId, memberName, avatarUrl) {
+  privatePerson = { id: memberId, name: memberName, avatarUrl };
+  delete unreadPriv[memberId];
+  updateBadges();
+  renderMembersList();
+  document.getElementById('chat-input-wrap').style.display = 'flex';
+  document.getElementById('priv-empty').style.display = 'none';
+  document.getElementById('chat-input').placeholder = `Nachricht an ${memberName}…`;
+  const initials = memberName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const icon = document.getElementById('chat-hd-icon');
+  icon.innerHTML = avatarUrl
+    ? `<img src="${avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`
+    : initials;
+  document.getElementById('chat-hd-name').textContent = memberName;
+  document.getElementById('chat-hd-sub').textContent  = '🔒 Privater Chat';
+  document.querySelectorAll('.pro-member-row').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`[data-mid="${memberId}"]`);
+  if (el) el.classList.add('active');
+  renderChat();
+  closeProfileModal();
+  // Close mobile members panel
+  document.getElementById('chat-members-panel').classList.remove('open');
+}
+
+// ── Members render ─────────────────────────────────────────
+function renderMembersList() {
+  const others = teamMembers.filter(m => m.id !== currentUser.id);
+  updateOnlineLabel();
+  const av = (m) => m.avatar_url ? `<img src="${m.avatar_url}" alt="">` : ((m.vorname||'?')[0]+(m.nachname||'?')[0]).toUpperCase();
+
+  document.getElementById('members-group').innerHTML = teamMembers.map(m => {
+    const isMe = m.id === currentUser.id;
+    return `<div class="pro-member-row" data-mid="${m.id}"
+      onclick="${isMe ? "openMyProfile()" : `openMemberProfile('${m.id}','${m.vorname}','${m.nachname}','${m.role}','${m.avatar_url||''}')`}">
+      <div class="pro-member-av">${av(m)}<div class="pro-member-dot ${m.is_online ? 'online' : ''}"></div></div>
+      <div class="pro-member-info">
+        <div class="pro-member-name">${escHtml(m.vorname)} ${escHtml(m.nachname)}${isMe ? ' <small style="color:var(--muted)">(Ich)</small>' : ''}</div>
+        <div class="pro-member-sub">${m.is_online ? '🟢 Online' : '⚫ Offline'}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('members-priv').innerHTML = others.length ? others.map(m => {
+    const unread = unreadPriv[m.id] || 0;
+    const isActive = privatePerson?.id === m.id;
+    return `<div class="pro-member-row ${isActive ? 'active' : ''}" data-mid="${m.id}"
+      onclick="openDM('${m.id}','${m.vorname} ${m.nachname}','${m.avatar_url||''}')">
+      <div class="pro-member-av">${av(m)}<div class="pro-member-dot ${m.is_online ? 'online' : ''}"></div></div>
+      <div class="pro-member-info">
+        <div class="pro-member-name">${escHtml(m.vorname)} ${escHtml(m.nachname)}</div>
+        <div class="pro-member-sub">${m.is_online ? '🟢 Online' : '⚫ Offline'} · ${m.role === 'admin' ? 'Admin' : 'Team'}</div>
+      </div>
+      ${unread ? `<span class="pro-member-badge">${unread}</span>` : ''}
+    </div>`;
+  }).join('')
+  : `<div style="padding:20px;text-align:center;font-size:.82rem;color:var(--muted)">Keine anderen Mitglieder.</div>`;
+}
+
+function updateOnlineLabel() {
+  const c = teamMembers.filter(m => m.is_online).length;
+  const el = document.getElementById('online-label');
+  if (el) el.textContent = `${c} Online`;
+}
+
+// ── Render messages ────────────────────────────────────────
+function renderChat() {
+  const container = document.getElementById('chat-messages');
+  let msgs;
+  if (activeTab === 'group') {
+    msgs = allMessages.filter(m => !m.is_private);
+  } else {
+    if (!privatePerson) return;
+    msgs = allMessages.filter(m =>
+      m.is_private && (
+        (m.sender_id === currentUser.id && m.recipient_id === privatePerson.id) ||
+        (m.sender_id === privatePerson.id && m.recipient_id === currentUser.id)
+      )
+    );
+  }
+  if (!msgs.length) {
+    container.innerHTML = `<div class="pro-chat-empty">
+      <div class="pro-chat-empty-icon">${activeTab === 'priv' ? '🔒' : '💬'}</div>
+      <div style="font-size:.88rem;color:var(--muted)">${activeTab === 'priv' ? 'Noch keine privaten Nachrichten.' : 'Noch keine Nachrichten. Sagen Sie Hallo! 👋'}</div>
+    </div>`;
+    return;
+  }
+  container.innerHTML = msgs.map(m => {
+    const isMe = m.sender_id === currentUser.id;
+    const initials = m.sender ? ((m.sender.vorname||'?')[0]+(m.sender.nachname||'?')[0]).toUpperCase() : '?';
+    const avatarHtml = m.sender?.avatar_url ? `<img src="${m.sender.avatar_url}" alt="">` : initials;
+    const time = new Date(m.created_at).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+    const name = m.sender ? `${m.sender.vorname} ${m.sender.nachname}` : 'Unbekannt';
+    let content = '';
+    if (m.file_url) {
+      const isImg = m.file_type?.startsWith('image/');
+      const isPdf = m.file_type === 'application/pdf';
+      if (isImg) content = `<a href="${m.file_url}" target="_blank"><img src="${m.file_url}" alt="${escHtml(m.file_name||'')}" class="pro-chat-file-img"></a>`;
+      else if (isPdf) content = `<a href="${m.file_url}" target="_blank" class="pro-chat-file-pdf"><i class="fa-solid fa-file-pdf"></i> ${escHtml(m.file_name||'Datei')}</a>`;
+      else content = `<a href="${m.file_url}" target="_blank" class="pro-chat-file-other"><i class="fa-solid fa-file"></i> ${escHtml(m.file_name||'Datei')}</a>`;
+      if (m.message) content += `<div style="margin-top:5px;font-size:.84rem">${escHtml(m.message)}</div>`;
+    } else {
+      content = escHtml(m.message);
+    }
+    return `<div class="pro-bubble-wrap ${isMe ? 'me' : 'them'}">
+      <div class="pro-bubble-av">${avatarHtml}</div>
+      <div class="pro-bubble-body">
+        ${!isMe ? `<div class="pro-bubble-sender">${escHtml(name)}</div>` : ''}
+        <div class="pro-bubble">${content}</div>
+        <div class="pro-bubble-time">${time}</div>
+      </div>
+    </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+// ── Send ───────────────────────────────────────────────────
+async function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg && !selectedFile) return;
+  if (activeTab === 'priv' && !privatePerson) {
+    proToast('Bitte zuerst eine Person auswählen.', 'error'); return;
+  }
+  input.value = '';
+  input.style.height = 'auto'; // reset textarea height after send
+  input.disabled = true;
+  document.getElementById('chat-send-btn').disabled = true;
+  let fileData = null;
+  if (selectedFile) {
+    fileData = await DB.uploadChatFile(selectedFile);
+    if (!fileData) { proToast('Datei konnte nicht hochgeladen werden.', 'error'); input.disabled = false; document.getElementById('chat-send-btn').disabled = false; return; }
+    clearFile();
+  }
+  const recipientId = activeTab === 'priv' ? privatePerson.id : null;
+  const res = await DB.sendChatMessage(msg, recipientId, fileData);
+  input.disabled = false;
+  document.getElementById('chat-send-btn').disabled = false;
+  if (!res.ok) proToast('Nachricht konnte nicht gesendet werden.', 'error');
+  else {
+    allMessages = await DB.getChatMessages(80);
+    renderChat();
+  }
+}
+
+// ── File ───────────────────────────────────────────────────
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { proToast('Max. 10 MB erlaubt.', 'error'); return; }
+  selectedFile = file;
+  document.getElementById('fp-name').textContent = file.name;
+  document.getElementById('file-preview').classList.add('show');
+  input.value = '';
+}
+function clearFile() {
+  selectedFile = null;
+  document.getElementById('file-preview').classList.remove('show');
+}
+
+// ── Badges ─────────────────────────────────────────────────
+function updateBadges() {
+  const bg = document.getElementById('badge-group');
+  const bp = document.getElementById('badge-priv');
+  const totalPriv = Object.values(unreadPriv).reduce((a, b) => a + b, 0);
+  bg.textContent = unreadGroup || '';
+  bg.classList.toggle('show', unreadGroup > 0);
+  bp.textContent = totalPriv || '';
+  bp.classList.toggle('show', totalPriv > 0);
+}
+
+// ── Alert ──────────────────────────────────────────────────
+function showAlert(senderName, preview, isPriv, senderId) {
+  alertPending = { isPriv, senderId };
+  document.getElementById('nma-icon').textContent = isPriv ? '🔒' : '💬';
+  document.getElementById('nma-sender').textContent = senderName;
+  document.getElementById('nma-preview').textContent = preview;
+  const typeEl = document.getElementById('nma-type');
+  typeEl.textContent = isPriv ? 'Privat' : 'Gruppe';
+  typeEl.className = 'pro-msg-alert-type ' + (isPriv ? 'private' : 'group');
+  document.getElementById('new-msg-alert').classList.add('show');
+  clearTimeout(alertTimer);
+  alertTimer = setTimeout(hideAlert, 6000);
+}
+function hideAlert() { document.getElementById('new-msg-alert').classList.remove('show'); alertPending = null; }
+function handleAlertClick() {
+  if (!alertPending) return;
+  if (alertPending.isPriv && alertPending.senderId) {
+    switchTab('priv');
+    const m = teamMembers.find(x => x.id === alertPending.senderId);
+    if (m) openDM(m.id, `${m.vorname} ${m.nachname}`, m.avatar_url || '');
+  } else {
+    switchTab('group');
+  }
+  hideAlert();
+}
+
+// ── Profile Modal ──────────────────────────────────────────
+function openMyProfile() {
+  const p = currentProfile;
+  const initials = ((p.vorname||'?')[0]+(p.nachname||'?')[0]).toUpperCase();
+  document.getElementById('pm-avatar').innerHTML = p.avatar_url ? `<img src="${p.avatar_url}" alt="">` : initials;
+  document.getElementById('pm-name').textContent = `${p.vorname} ${p.nachname}`;
+  document.getElementById('pm-role').textContent = p.role === 'admin' ? '🛡️ Administrator' : '👷 Mitarbeiter';
+  document.getElementById('pm-actions').innerHTML = `<a href="profil.html" class="pro-btn" style="font-size:.82rem"><i class="fa-solid fa-user"></i> Mein Profil</a>`;
+  document.getElementById('pm-upload-wrap').style.display = 'block';
+  document.getElementById('profile-modal').classList.add('open');
+}
+function openMemberProfile(id, vn, nn, role, avatarUrl) {
+  const initials = (vn[0]+nn[0]).toUpperCase();
+  document.getElementById('pm-avatar').innerHTML = avatarUrl ? `<img src="${avatarUrl}" alt="">` : initials;
+  document.getElementById('pm-name').textContent = `${vn} ${nn}`;
+  document.getElementById('pm-role').textContent = role === 'admin' ? '🛡️ Administrator' : '👷 Mitarbeiter';
+  document.getElementById('pm-actions').innerHTML = `
+    <button class="pro-btn" style="font-size:.82rem" onclick="openDM('${id}','${vn} ${nn}','${avatarUrl}')"><i class="fa-solid fa-comments"></i> Schreiben</button>
+    ${currentProfile.role === 'admin' ? `<a href="profil.html?id=${id}" class="pro-btn pro-btn-outline" style="font-size:.82rem"><i class="fa-solid fa-user-gear"></i> Profil</a>` : ''}
+  `;
+  document.getElementById('pm-upload-wrap').style.display = 'none';
+  document.getElementById('profile-modal').classList.add('open');
+}
+function closeProfileModal() { document.getElementById('profile-modal').classList.remove('open'); }
+document.getElementById('profile-modal').addEventListener('click', e => { if (e.target === document.getElementById('profile-modal')) closeProfileModal(); });
+
+async function uploadMyAvatar(input) {
+  const file = input.files[0]; if (!file) return;
+  const res = await DB.uploadAvatar(currentUser.id, file);
+  if (res?.url) {
+    await DB.updateProfileById(currentUser.id, { avatar_url: res.url });
+    proToast('Foto gespeichert!', 'success');
+    closeProfileModal();
+    teamMembers = await DB.getTeamMembers();
+    renderMembersList();
+  } else proToast('Fehler beim Hochladen.', 'error');
+}
+
+// ── Mobile members toggle ──────────────────────────────────
+function toggleMobileMembers() {
+  const panel = document.getElementById('chat-members-panel');
+  const label = document.getElementById('mob-toggle-label');
+  panel.classList.toggle('open');
+  label.textContent = panel.classList.contains('open') ? 'Schließen' : 'Mitglieder anzeigen';
+}
+
+function escHtml(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ── Textarea auto-resize ──────────────────────────────────── */
+function autoResizeInput(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
+</script>
+</body>
+</html>

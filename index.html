@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proreinigung — Reinigung auf höchstem Niveau</title>
+<meta name="description" content="Proreinigung – Ihr professioneller Reinigungspartner in Deutschland. Büro-, Industrie-, Glas- und Grundreinigung. Jetzt kostenloses Angebot anfordern!">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ══ NEW DESIGN SYSTEM ═══════════════════════════════════════ */
+:root {
+  --pr-blue:   #0047CC;
+  --pr-dark:   #0A0A0A;
+  --pr-yellow: #F5C518;
+  --pr-gray:   #F7F8FA;
+  --pr-text:   #1A1A1A;
+  --pr-muted:  #6B7280;
+  --pr-border: #E5E7EB;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Open Sans', sans-serif; color: var(--pr-text); background: #fff; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+.pr-container { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+
+/* ── Typography ─────────────────────────────────────────────── */
+.pr-eyebrow {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--pr-blue);
+  display: block;
+  margin-bottom: 12px;
+}
+.pr-h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(2.6rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.05; color: #fff; letter-spacing: -.02em; }
+.pr-h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; line-height: 1.1; color: var(--pr-text); letter-spacing: -.025em; }
+.pr-h3 { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 800; line-height: 1.2; color: var(--pr-text); }
+.pr-lead { font-size: 1.05rem; color: #fff; opacity: .82; line-height: 1.75; }
+.pr-body { font-size: .95rem; color: var(--pr-muted); line-height: 1.75; }
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.pr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 30px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: .92rem;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  text-decoration: none;
+}
+.pr-btn-yellow {
+  background: var(--pr-yellow);
+  color: var(--pr-dark);
+}
+.pr-btn-yellow:hover { background: #e0b300; transform: translateY(-2px); color: var(--pr-dark); }
+.pr-btn-yellow .arrow {
+  width: 32px; height: 32px;
+  background: var(--pr-dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s;
+}
+.pr-btn-yellow:hover .arrow { transform: translateX(4px); }
+.pr-btn-blue { background: var(--pr-blue); color: #fff; }
+.pr-btn-blue:hover { background: #0039a6; transform: translateY(-2px); color: #fff; }
+.pr-btn-outline-white { border: 2px solid rgba(255,255,255,.5); color: #fff; }
+.pr-btn-outline-white:hover { background: rgba(255,255,255,.1); border-color: #fff; color: #fff; }
+
+/* ══ NAVBAR ══════════════════════════════════════════════════ */
+#pr-navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  transition: all .3s;
+  padding: 0 28px;
+}
+#pr-navbar .pr-nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 76px;
+}
+#pr-navbar.transparent { background: transparent; }
+#pr-navbar.solid {
+  background: #fff;
+  box-shadow: 0 2px 20px rgba(0,0,0,.1);
+}
+#pr-navbar.solid .nav-link-item { color: var(--pr-text) !important; }
+#pr-navbar.solid .nav-login-link { color: var(--pr-text) !important; border-color: var(--pr-border) !important; }
+#pr-navbar.solid .nav-login-link:hover { background: var(--pr-gray) !important; }
+
+.pr-nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link-item {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: .85rem;
+  color: rgba(255,255,255,.9);
+  padding: 8px 16px; border-radius: 4px;
+  transition: all .2s;
+}
+.nav-link-item:hover, .nav-link-item.active { color: #fff; background: rgba(255,255,255,.12); }
+#pr-navbar.solid .nav-link-item:hover, #pr-navbar.solid .nav-link-item.active { background: var(--pr-gray); color: var(--pr-blue) !important; }
+.nav-login-link {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: .83rem;
+  color: rgba(255,255,255,.9);
+  padding: 8px 18px;
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 4px;
+  transition: all .2s;
+}
+.nav-login-link:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+/* hamburger */
+.pr-hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; cursor: pointer; }
+.pr-hamburger span { width: 24px; height: 2px; border-radius: 2px; transition: all .3s; }
+#pr-navbar.transparent .pr-hamburger span { background: #fff; }
+#pr-navbar.solid .pr-hamburger span { background: var(--pr-text); }
+
+/* mobile menu */
+.pr-mobile-menu {
+  display: none; position: fixed; inset: 0; background: #0A0A0A;
+  z-index: 999; flex-direction: column; padding: 90px 28px 40px; gap: 4px;
+}
+.pr-mobile-menu.open { display: flex; }
+.pr-mobile-menu a { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.3rem; color: rgba(255,255,255,.8); padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.pr-mobile-menu a:hover { color: var(--pr-yellow); }
+.pr-mobile-actions { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ══ HERO ════════════════════════════════════════════════════ */
+#pr-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.pr-hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('assets/images/grundreinigung.png');
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.04);
+  transition: transform 8s ease;
+}
+#pr-hero.loaded .pr-hero-bg { transform: scale(1); }
+.pr-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(5,5,15,.88) 55%, rgba(5,5,15,.55) 100%);
+}
+.pr-hero-overlay2 {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 60%);
+}
+.pr-hero-content {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 60px;
+  align-items: center;
+  padding: 180px 28px 100px;
+  max-width: 1200px; margin: 0 auto; width: 100%;
+}
+.pr-hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(245,197,24,.15);
+  border: 1px solid rgba(245,197,24,.4);
+  color: var(--pr-yellow);
+  padding: 7px 16px 7px 8px;
+  border-radius: 999px;
+  font-size: .78rem; font-weight: 700;
+  margin-bottom: 24px;
+}
+.pr-hero-badge-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--pr-yellow); display: flex; align-items: center; justify-content: center; }
+.pr-hero-badge-dot svg { width: 14px; height: 14px; }
+
+.pr-hero-title { margin-bottom: 22px; }
+.pr-hero-title .yellow { color: var(--pr-yellow); }
+.pr-hero-sub { margin-bottom: 36px; max-width: 520px; }
+.pr-hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 56px; }
+
+.pr-hero-stats { display: flex; gap: 0; }
+.pr-hero-stat {
+  padding: 16px 28px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  text-align: center;
+}
+.pr-hero-stat:first-child { padding-left: 0; }
+.pr-hero-stat:last-child  { border-right: none; }
+.pr-hero-stat .val { font-family: 'Montserrat', sans-serif; font-size: 1.9rem; font-weight: 900; color: #fff; line-height: 1; }
+.pr-hero-stat .val span { color: var(--pr-yellow); }
+.pr-hero-stat .lbl { font-size: .72rem; color: rgba(255,255,255,.55); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+
+/* Hero side card */
+.pr-hero-card {
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  animation: floatUpDown 5s ease-in-out infinite;
+}
+@keyframes floatUpDown { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.pr-hero-card-header {
+  background: var(--pr-blue);
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.pr-hero-card-header .ch-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+}
+.pr-hero-card-header .ch-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #fff; font-size: .9rem; }
+.pr-hero-card-header .ch-sub { font-size: .72rem; color: rgba(255,255,255,.65); }
+.pr-hero-card-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+.pr-hcb-item { display: flex; align-items: center; gap: 12px; }
+.pr-hcb-check { width: 22px; height: 22px; border-radius: 50%; background: #DCFCE7; display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #16A34A; flex-shrink: 0; }
+.pr-hcb-text { font-size: .83rem; font-weight: 600; color: var(--pr-text); }
+.pr-hero-card-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--pr-border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pr-hcf-rating { display: flex; gap: 2px; }
+.pr-hcf-rating span { color: var(--pr-yellow); font-size: .9rem; }
+.pr-hcf-text { font-size: .75rem; color: var(--pr-muted); }
+
+/* ══ TRUST STRIP ════════════════════════════════════════════ */
+#pr-trust {
+  background: #fff;
+  border-top: 4px solid var(--pr-yellow);
+  padding: 32px 0;
+}
+.pr-trust-inner { display: flex; align-items: center; gap: 0; }
+.pr-trust-label {
+  flex-shrink: 0;
+  padding-right: 36px;
+  border-right: 1px solid var(--pr-border);
+  margin-right: 36px;
+}
+.pr-trust-label strong { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.3rem; color: var(--pr-dark); display: block; }
+.pr-trust-label span { font-size: .75rem; color: var(--pr-muted); }
+.pr-trust-logos { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; flex: 1; }
+.pr-trust-logo { display: flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .88rem; color: #aaa; filter: grayscale(1); transition: all .2s; }
+.pr-trust-logo:hover { color: var(--pr-blue); filter: none; }
+.pr-trust-logo svg { width: 22px; height: 22px; fill: currentColor; }
+
+/* ══ SERVICES ════════════════════════════════════════════════ */
+#pr-services { background: var(--pr-dark); padding: 100px 0; }
+.pr-services-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 52px; gap: 20px; flex-wrap: wrap; }
+.pr-services-header .pr-eyebrow { color: var(--pr-yellow); }
+.pr-services-header .pr-h2 { color: #fff; margin-top: 10px; }
+.pr-services-header .pr-body { color: rgba(255,255,255,.55); max-width: 360px; }
+
+.pr-services-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.pr-services-scroll::-webkit-scrollbar { height: 4px; }
+.pr-services-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.pr-services-scroll::-webkit-scrollbar-thumb { background: var(--pr-yellow); border-radius: 2px; }
+
+.pr-svc-card {
+  flex-shrink: 0;
+  width: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform .3s;
+}
+.pr-svc-card:hover { transform: translateY(-6px); }
+.pr-svc-img {
+  width: 100%; height: 340px;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s;
+}
+.pr-svc-card:hover .pr-svc-img { transform: scale(1.05); }
+.pr-svc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 40%, rgba(0,0,0,.2) 100%); }
+.pr-svc-num {
+  position: absolute; top: 16px; left: 16px;
+  font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: .75rem;
+  color: rgba(255,255,255,.5); letter-spacing: .15em;
+}
+.pr-svc-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; }
+.pr-svc-title { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+.pr-svc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--pr-yellow); color: var(--pr-dark);
+  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .78rem;
+  padding: 9px 16px; border-radius: 999px;
+  transition: all .2s;
+}
+.pr-svc-btn:hover { background: #e0b300; color: var(--pr-dark); gap: 12px; }
+.pr-svc-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--pr-blue), var(--pr-yellow));
+}
+
+.pr-svc-nav { display: flex; gap: 10px; margin-top: 32px; }
+.pr-svc-nav-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.15);
+  background: none;
+  color: rgba(255,255,255,.6);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.pr-svc-nav-btn:hover { background: var(--pr-yellow); border-color: var(--pr-yellow); color: var(--pr-dark); }
+.pr-svc-nav-btn svg { width: 18px; height: 18px; }
+
+/* ══ WHY US ══════════════════════════════════════════════════ */
+#pr-why { background: #fff; padding: 100px 0; }
+.pr-why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.pr-why-img-wrap { position: relative; border-radius: 12px; overflow: hidden; }
+.pr-why-img { width: 100%; height: 520px; object-fit: cover; border-radius: 12px; display: block; }
+.pr-why-img-badge {
+  position: absolute; bottom: -16px; right: -16px;
+  background: var(--pr-yellow);
+  color: var(--pr-dark);
+  border-radius: 12px;
+  padding: 22px 28px;
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(0,0,0,.18);
+}
+.pr-why-img-badge .num { font-family: 'Montserrat', sans-serif; font-size: 2.8rem; font-weight: 900; line-height: 1; }
+.pr-why-img-badge .txt { font-family: 'Montserrat', sans-serif; font-size: .75rem; font-weight: 700; line-height: 1.3; margin-top: 4px; }
+
+.pr-why-eyebrow { color: var(--pr-blue) !important; }
+.pr-why-checks { display: flex; flex-direction: column; gap: 16px; margin: 32px 0; }
+.pr-why-check {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 20px;
+  border: 1px solid var(--pr-border);
+  border-radius: 10px;
+  transition: all .2s;
+}
+.pr-why-check:hover { border-color: var(--pr-blue); background: #F0F6FF; }
+.pr-why-check-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--pr-blue); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; flex-shrink: 0;
+}
+.pr-why-check:hover .pr-why-check-icon { background: var(--pr-dark); }
+.pr-why-check-body strong { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .9rem; color: var(--pr-text); display: block; margin-bottom: 3px; }
+.pr-why-check-body span { font-size: .82rem; color: var(--pr-muted); }
+
+/* ══ SPLIT SECTION ══════════════════════════════════════════ */
+#pr-split { background: var(--pr-gray); padding: 100px 0; }
+.pr-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.pr-split-img-wrap { border-radius: 12px; overflow: hidden; }
+.pr-split-img { width: 100%; height: 460px; object-fit: cover; border-radius: 12px; display: block; }
+.pr-split-label-strip {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--pr-blue); color: #fff;
+  padding: 8px 20px 8px 8px;
+  border-radius: 999px;
+  font-size: .75rem; font-weight: 700;
+  margin-bottom: 20px;
+  text-transform: uppercase; letter-spacing: .12em;
+}
+.pr-split-label-strip .dot { width: 28px; height: 28px; border-radius: 50%; background: var(--pr-yellow); display: flex; align-items: center; justify-content: center; }
+.pr-split-label-strip .dot svg { width: 14px; height: 14px; }
+.pr-split-body .pr-h2 { margin-bottom: 18px; }
+.pr-split-body .pr-body { margin-bottom: 30px; }
+
+/* ══ STATS ══════════════════════════════════════════════════ */
+#pr-stats { background: var(--pr-blue); padding: 70px 0; }
+.pr-stats-grid { display: grid; grid-template-columns: repeat(4,1fr); }
+.pr-stat-item { text-align: center; padding: 32px 20px; border-right: 1px solid rgba(255,255,255,.15); }
+.pr-stat-item:last-child { border-right: none; }
+.pr-stat-num { font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; display: block; }
+.pr-stat-num .yellow { color: var(--pr-yellow); }
+.pr-stat-label { font-size: .8rem; color: rgba(255,255,255,.65); text-transform: uppercase; letter-spacing: .12em; margin-top: 8px; font-weight: 600; }
+
+/* ══ ABOUT PREVIEW ══════════════════════════════════════════ */
+#pr-about { background: #fff; padding: 100px 0; }
+.pr-about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.pr-about-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--pr-border); }
+.pr-about-tab {
+  padding: 10px 22px;
+  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .83rem;
+  color: var(--pr-muted); cursor: pointer; border: none; background: none;
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .2s;
+}
+.pr-about-tab.active { color: var(--pr-blue); border-bottom-color: var(--pr-blue); }
+.pr-about-img { width: 100%; height: 480px; object-fit: cover; border-radius: 12px; display: block; }
+
+/* ══ TESTIMONIALS ════════════════════════════════════════════ */
+#pr-testimonials { background: var(--pr-dark); padding: 100px 0; }
+.pr-test-header { text-align: center; margin-bottom: 60px; }
+.pr-test-header .pr-eyebrow { color: var(--pr-yellow); }
+.pr-test-header .pr-h2 { color: #fff; margin-top: 10px; }
+.pr-test-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.pr-test-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px; padding: 32px;
+  transition: all .25s;
+}
+.pr-test-card:hover { background: rgba(255,255,255,.09); border-color: rgba(245,197,24,.3); transform: translateY(-4px); }
+.pr-test-stars { color: var(--pr-yellow); font-size: .9rem; letter-spacing: 2px; margin-bottom: 18px; }
+.pr-test-text { font-size: .92rem; color: rgba(255,255,255,.72); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
+.pr-test-author { display: flex; align-items: center; gap: 12px; }
+.pr-test-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--pr-blue); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 700; color: #fff; font-size: .9rem; flex-shrink: 0; }
+.pr-test-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .88rem; color: #fff; }
+.pr-test-role { font-size: .75rem; color: rgba(255,255,255,.4); }
+
+/* ══ CTA STRIP ══════════════════════════════════════════════ */
+#pr-cta { background: var(--pr-yellow); padding: 70px 0; }
+.pr-cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+.pr-cta-text strong { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; color: var(--pr-dark); display: block; line-height: 1.2; margin-bottom: 8px; }
+.pr-cta-text p { font-size: .9rem; color: rgba(10,10,10,.6); }
+.pr-cta-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* ══ FOOTER ══════════════════════════════════════════════════ */
+#pr-footer { background: #0A0A0A; padding: 80px 0 0; }
+.pr-footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 48px; margin-bottom: 60px; }
+.pr-footer-brand p { font-size: .87rem; color: rgba(255,255,255,.4); line-height: 1.8; margin: 18px 0 24px; }
+.pr-footer-social { display: flex; gap: 10px; }
+.pr-footer-social a { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: .85rem; transition: all .2s; }
+.pr-footer-social a:hover { background: var(--pr-yellow); color: var(--pr-dark); }
+.pr-footer-col h4 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .82rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.35); margin-bottom: 20px; }
+.pr-footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.pr-footer-col ul a { font-size: .88rem; color: rgba(255,255,255,.5); transition: all .2s; }
+.pr-footer-col ul a:hover { color: var(--pr-yellow); padding-left: 4px; }
+.pr-footer-contact { display: flex; flex-direction: column; gap: 12px; }
+.pr-footer-contact-item { display: flex; align-items: flex-start; gap: 12px; }
+.pr-footer-contact-item .ic { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; color: var(--pr-yellow); font-size: .8rem; flex-shrink: 0; margin-top: 2px; }
+.pr-footer-contact-item .tx { font-size: .85rem; color: rgba(255,255,255,.5); line-height: 1.6; }
+.pr-footer-contact-item .tx a { color: rgba(255,255,255,.5); transition: all .2s; }
+.pr-footer-contact-item .tx a:hover { color: var(--pr-yellow); }
+.pr-footer-bottom { border-top: 1px solid rgba(255,255,255,.06); padding: 24px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.pr-footer-bottom p { font-size: .82rem; color: rgba(255,255,255,.25); }
+.pr-footer-legal { display: flex; gap: 20px; }
+.pr-footer-legal a { font-size: .82rem; color: rgba(255,255,255,.25); transition: all .2s; }
+.pr-footer-legal a:hover { color: var(--pr-yellow); }
+
+/* ══ FLOATING ════════════════════════════════════════════════ */
+.wa-float { position: fixed; bottom: 28px; right: 28px; z-index: 900; }
+.wa-btn {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: #25D366; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 28px rgba(37,211,102,.4);
+  font-size: 1.4rem;
+  transition: transform .2s;
+}
+.wa-btn:hover { transform: scale(1.1); color: #fff; }
+.back-top {
+  position: fixed; bottom: 94px; right: 28px; z-index: 900;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--pr-blue); color: #fff;
+  border: none; cursor: pointer; display: none;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,71,204,.35);
+  font-size: .9rem; transition: all .2s;
+}
+.back-top.show { display: flex; }
+.back-top:hover { background: var(--pr-dark); transform: translateY(-2px); }
+
+.toast-container { position: fixed; top: 90px; right: 20px; z-index: 5000; display: flex; flex-direction: column; gap: 10px; }
+
+/* ══ SCROLL REVEAL ═══════════════════════════════════════════ */
+.sr { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+.sr.visible { opacity: 1; transform: none; }
+.sr-left { opacity: 0; transform: translateX(-28px); transition: opacity .7s ease, transform .7s ease; }
+.sr-left.visible { opacity: 1; transform: none; }
+.sr-right { opacity: 0; transform: translateX(28px); transition: opacity .7s ease, transform .7s ease; }
+.sr-right.visible { opacity: 1; transform: none; }
+.sr-d1 { transition-delay: .1s; }
+.sr-d2 { transition-delay: .2s; }
+.sr-d3 { transition-delay: .3s; }
+.sr-d4 { transition-delay: .4s; }
+
+/* ══ RESPONSIVE ══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .pr-hero-content { grid-template-columns: 1fr; }
+  .pr-hero-card { display: none; }
+  .pr-why-grid, .pr-split-grid, .pr-about-grid { grid-template-columns: 1fr; }
+  .pr-why-img-wrap { order: -1; }
+  .pr-footer-grid { grid-template-columns: 1fr 1fr; }
+  .pr-test-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .pr-nav-links, .nav-login-link, #pr-navbar .pr-btn { display: none; }
+  .pr-hamburger { display: flex; }
+  .pr-hero-stats { flex-wrap: wrap; }
+  .pr-stats-grid { grid-template-columns: repeat(2,1fr); }
+  .pr-test-grid { grid-template-columns: 1fr; }
+  .pr-footer-grid { grid-template-columns: 1fr; }
+  .pr-cta-inner { flex-direction: column; text-align: center; }
+  .pr-trust-inner { flex-direction: column; gap: 20px; }
+  .pr-trust-label { border-right: none; padding-right: 0; margin-right: 0; border-bottom: 1px solid var(--pr-border); padding-bottom: 16px; text-align: center; }
+  .pr-services-scroll { gap: 14px; }
+  .pr-svc-card { width: 260px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════════════════════ -->
+<nav id="pr-navbar" class="transparent">
+  <div class="pr-nav-inner">
+    <a href="index.html">
+      <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto;display:block">
+    </a>
+
+    <div class="pr-nav-links">
+      <a href="index.html"    class="nav-link-item active">Startseite</a>
+      <a href="services.html" class="nav-link-item">Leistungen</a>
+      <a href="about.html"    class="nav-link-item">Über uns</a>
+      <a href="blog.html"     class="nav-link-item">Blog</a>
+      <a href="careers.html"  class="nav-link-item">Karriere</a>
+      <a href="contact.html"  class="nav-link-item">Kontakt</a>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="login.html" class="nav-login-link">Anmelden</a>
+      <a href="quote.html" class="pr-btn pr-btn-yellow" style="padding:10px 20px;font-size:.82rem">
+        Angebot anfragen
+        <span class="arrow" style="width:26px;height:26px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+    </div>
+
+    <button class="pr-hamburger" id="pr-ham" aria-label="Menü">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="pr-mobile-menu" id="pr-mobile">
+  <a href="index.html">Startseite</a>
+  <a href="services.html">Leistungen</a>
+  <a href="about.html">Über uns</a>
+  <a href="blog.html">Blog</a>
+  <a href="careers.html">Karriere</a>
+  <a href="contact.html">Kontakt</a>
+  <div class="pr-mobile-actions">
+    <a href="login.html" class="pr-btn pr-btn-outline-white">Anmelden</a>
+    <a href="quote.html" class="pr-btn pr-btn-yellow">Angebot anfragen <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></span></a>
+  </div>
+</div>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section id="pr-hero">
+  <div class="pr-hero-bg"></div>
+  <div class="pr-hero-overlay"></div>
+  <div class="pr-hero-overlay2"></div>
+
+  <div class="pr-hero-content pr-container">
+    <!-- Left -->
+    <div>
+      <div class="pr-hero-badge sr">
+        <div class="pr-hero-badge-dot">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--pr-dark)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        Nr. 1 Reinigungspartner in Deutschland
+      </div>
+
+      <h1 class="pr-h1 pr-hero-title sr sr-d1">
+        Professionelle<br>
+        <span class="yellow">Reinigung —</span><br>
+        Erster Klasse
+      </h1>
+
+      <p class="pr-lead pr-hero-sub sr sr-d2">
+        Proreinigung steht für makellose Sauberkeit, zuverlässigen Service und modernste Reinigungstechniken — für Büros, Industrie und Gebäude bundesweit.
+      </p>
+
+      <div class="pr-hero-actions sr sr-d3">
+        <a href="quote.html" class="pr-btn pr-btn-yellow">
+          Kostenlos anfragen
+          <span class="arrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </a>
+        <a href="services.html" class="pr-btn pr-btn-outline-white">Unsere Leistungen</a>
+      </div>
+
+      <div class="pr-hero-stats sr sr-d4">
+        <div class="pr-hero-stat">
+          <div class="val"><span>500</span>+</div>
+          <div class="lbl">Kunden</div>
+        </div>
+        <div class="pr-hero-stat">
+          <div class="val"><span>15</span></div>
+          <div class="lbl">Jahre Erfahrung</div>
+        </div>
+        <div class="pr-hero-stat">
+          <div class="val"><span>98</span>%</div>
+          <div class="lbl">Zufriedenheit</div>
+        </div>
+        <div class="pr-hero-stat">
+          <div class="val"><span>24</span>/7</div>
+          <div class="lbl">Erreichbar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: floating card -->
+    <div class="pr-hero-card sr-right">
+      <div class="pr-hero-card-header">
+        <div class="ch-icon">✨</div>
+        <div>
+          <div class="ch-title">Warum Proreinigung?</div>
+          <div class="ch-sub">Ihre beste Wahl für Sauberkeit</div>
+        </div>
+      </div>
+      <div class="pr-hero-card-body">
+        <div class="pr-hcb-item">
+          <div class="pr-hcb-check">✓</div>
+          <div class="pr-hcb-text">Wir sind schnell — 24h Reaktionszeit</div>
+        </div>
+        <div class="pr-hcb-item">
+          <div class="pr-hcb-check">✓</div>
+          <div class="pr-hcb-text">ISO-zertifiziert und vollständig versichert</div>
+        </div>
+        <div class="pr-hcb-item">
+          <div class="pr-hcb-check">✓</div>
+          <div class="pr-hcb-text">Wir sind zuverlässig — immer pünktlich</div>
+        </div>
+        <div class="pr-hcb-item">
+          <div class="pr-hcb-check">✓</div>
+          <div class="pr-hcb-text">Umweltfreundliche Bio-Reinigungsmittel</div>
+        </div>
+      </div>
+      <div class="pr-hero-card-footer">
+        <div>
+          <div class="pr-hcf-rating">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="pr-hcf-text">4.9 von 5 — 320+ Bewertungen</div>
+        </div>
+        <a href="quote.html" class="pr-btn pr-btn-yellow" style="padding:9px 16px;font-size:.78rem">
+          Anfragen →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TRUST STRIP ════════════════════════════════════════════ -->
+<section id="pr-trust">
+  <div class="pr-container">
+    <div class="pr-trust-inner">
+      <div class="pr-trust-label">
+        <strong>5.000+</strong>
+        <span>Zufriedene Kunden</span>
+      </div>
+      <div class="pr-trust-logos">
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> BMW Group</div>
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Siemens</div>
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Allianz</div>
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Lufthansa</div>
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Deutsche Bank</div>
+        <div class="pr-trust-logo"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg> SAP SE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ════════════════════════════════════════════════ -->
+<section id="pr-services">
+  <div class="pr-container">
+    <div class="pr-services-header">
+      <div class="sr">
+        <span class="pr-eyebrow" style="color:var(--pr-yellow)">Was wir anbieten</span>
+        <div class="pr-h2" style="color:#fff;margin-top:10px">Ihre lokale<br>Reinigungsfirma</div>
+      </div>
+      <p class="pr-body sr" style="color:rgba(255,255,255,.5);max-width:320px">Von der Büroreinigung bis zur Industriereinigung — maßgeschneiderte Lösungen für jeden Bedarf.</p>
+    </div>
+
+    <div class="pr-services-scroll" id="svc-scroll">
+      <div class="pr-svc-card sr sr-d1">
+        <img class="pr-svc-img" src="assets/images/bueroreinigung.png" alt="Büroreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">01</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Büroreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr sr-d2">
+        <img class="pr-svc-img" src="assets/images/industriereinigung.png" alt="Industriereinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">02</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Industriereinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr sr-d3">
+        <img class="pr-svc-img" src="assets/images/glasreinigung.png" alt="Glasreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">03</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Glasreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr sr-d4">
+        <img class="pr-svc-img" src="assets/images/grundreinigung.png" alt="Grundreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">04</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Grundreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr">
+        <img class="pr-svc-img" src="assets/images/fassadenreinigung.png" alt="Fassadenreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">05</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Fassadenreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr">
+        <img class="pr-svc-img" src="assets/images/teppichreinigung.png" alt="Teppichreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">06</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Teppichreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr">
+        <img class="pr-svc-img" src="assets/images/parkhausreinigung.png" alt="Parkhausreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">07</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Parkhausreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+      <div class="pr-svc-card sr">
+        <img class="pr-svc-img" src="assets/images/krankenhausreinigung.png" alt="Krankenhausreinigung">
+        <div class="pr-svc-overlay"></div>
+        <div class="pr-svc-num">08</div>
+        <div class="pr-svc-body">
+          <div class="pr-svc-title">Krankenhausreinigung</div>
+          <a href="services.html" class="pr-svc-btn">Angebot anfragen <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="pr-svc-bar"></div>
+      </div>
+    </div>
+
+    <div class="pr-svc-nav">
+      <button class="pr-svc-nav-btn" id="svc-prev" aria-label="Zurück">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="pr-svc-nav-btn" id="svc-next" aria-label="Weiter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <a href="services.html" style="margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.82rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px;transition:color .2s">
+        Alle Leistungen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY US ══════════════════════════════════════════════════ -->
+<section id="pr-why">
+  <div class="pr-container">
+    <div class="pr-why-grid">
+      <div class="sr-left">
+        <span class="pr-eyebrow pr-why-eyebrow">Präzise &amp; Zuverlässig</span>
+        <h2 class="pr-h2">Warum Proreinigung<br>wählen?</h2>
+        <div class="pr-why-checks">
+          <div class="pr-why-check">
+            <div class="pr-why-check-icon">🌍</div>
+            <div class="pr-why-check-body">
+              <strong>Wir sind lokal</strong>
+              <span>Schnell bei Ihnen vor Ort — wir kennen Ihre Region und reagieren innerhalb von 24 Stunden auf jede Anfrage.</span>
+            </div>
+          </div>
+          <div class="pr-why-check">
+            <div class="pr-why-check-icon">🏆</div>
+            <div class="pr-why-check-body">
+              <strong>Wir sind ISO-zertifiziert</strong>
+              <span>Mit geprüften Qualitätsstandards und ausgebildetem Personal garantieren wir erstklassige Ergebnisse bei jeder Reinigung.</span>
+            </div>
+          </div>
+          <div class="pr-why-check">
+            <div class="pr-why-check-icon">🛡️</div>
+            <div class="pr-why-check-body">
+              <strong>Wir sind zuverlässig</strong>
+              <span>Pünktlich, professionell und stets diskret — Ihre Zufriedenheit ist unser Anspruch. 98% zufriedene Kunden sprechen für sich.</span>
+            </div>
+          </div>
+        </div>
+        <a href="quote.html" class="pr-btn pr-btn-yellow">
+          Kostenlos anfragen
+          <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="sr-right" style="position:relative">
+        <div class="pr-why-img-wrap">
+          <img class="pr-why-img" src="assets/images/bueroreinigung.png" alt="Büroreinigung">
+        </div>
+        <div class="pr-why-img-badge">
+          <div class="num">15</div>
+          <div class="txt">Jahre<br>Erfahrung</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SPLIT ══════════════════════════════════════════════════ -->
+<section id="pr-split">
+  <div class="pr-container">
+    <div class="pr-split-grid">
+      <div class="sr-left">
+        <div class="pr-split-img-wrap">
+          <img class="pr-split-img" src="assets/images/industriereinigung.png" alt="Kein Problem — wir reinigen alles">
+        </div>
+      </div>
+      <div class="sr-right">
+        <div class="pr-split-label-strip">
+          <div class="dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          Jede Größe — Kein Problem
+        </div>
+        <h2 class="pr-h2 pr-split-body">Kein Auftrag<br>zu groß für uns</h2>
+        <p class="pr-body pr-split-body" style="margin-bottom:28px">
+          Wir brauchen Sauberkeit für alles heutzutage. Wenn Sie abgetrennt von Ihrer Anlage sind und alles auf der Welt Sie braucht, versteht Proreinigung das — wir sind immer ein Anruf entfernt und handeln schnell.
+        </p>
+        <p class="pr-body pr-split-body" style="margin-bottom:32px">
+          Von der kleinen Büroreinigung bis zur Großreinigung von Industriekomplexen — keine Aufgabe ist zu groß oder zu klein. Rufen Sie uns an oder fordern Sie jetzt Ihr Angebot an.
+        </p>
+        <a href="quote.html" class="pr-btn pr-btn-blue">
+          Angebot anfordern
+          <span style="width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══════════════════════════════════════════════════ -->
+<section id="pr-stats">
+  <div class="pr-container">
+    <div class="pr-stats-grid">
+      <div class="pr-stat-item sr">
+        <span class="pr-stat-num"><span class="yellow" id="cnt-1">500</span>+</span>
+        <div class="pr-stat-label">Zufriedene Kunden</div>
+      </div>
+      <div class="pr-stat-item sr sr-d1">
+        <span class="pr-stat-num"><span class="yellow" id="cnt-2">12000</span>+</span>
+        <div class="pr-stat-label">Abgeschlossene Aufträge</div>
+      </div>
+      <div class="pr-stat-item sr sr-d2">
+        <span class="pr-stat-num"><span class="yellow" id="cnt-3">150</span>+</span>
+        <div class="pr-stat-label">Qualifizierte Mitarbeiter</div>
+      </div>
+      <div class="pr-stat-item sr sr-d3">
+        <span class="pr-stat-num"><span class="yellow" id="cnt-4">15</span></span>
+        <div class="pr-stat-label">Jahre Erfahrung</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT PREVIEW ═════════════════════════════════════════ -->
+<section id="pr-about">
+  <div class="pr-container">
+    <div class="pr-about-grid">
+      <div class="sr-left">
+        <span class="pr-eyebrow">Präzise · Gewerblich · Privat</span>
+        <h2 class="pr-h2" style="margin-bottom:18px">Proreinigung —<br>Ihr Go-to Partner</h2>
+
+        <div class="pr-about-tabs">
+          <button class="pr-about-tab active" data-tab="gewerbe">Gewerbe</button>
+          <button class="pr-about-tab" data-tab="privat">Privat</button>
+          <button class="pr-about-tab" data-tab="industrie">Industrie</button>
+        </div>
+
+        <div id="tab-gewerbe">
+          <p class="pr-body" style="margin-bottom:20px">
+            Für Unternehmen und Betriebe bieten wir maßgeschneiderte Reinigungslösungen — von der täglichen Büroreinigung über Glasreinigung bis zu kompletten Gebäudereinigungen. Wir sind Ihr verlässlicher Partner.
+          </p>
+          <p class="pr-body" style="margin-bottom:28px">
+            Wir kümmern uns um alles — Ihre elektrischen Code-Inspektionen, Ihren Reinigungsplan, Wartung und mehr. Egal was Sie brauchen, wir sind 24/7 erreichbar.
+          </p>
+        </div>
+        <div id="tab-privat" style="display:none">
+          <p class="pr-body" style="margin-bottom:20px">
+            Für Privatpersonen und Haushalte bieten wir flexible Reinigungsservices — einmalig oder regelmäßig. Grundreinigung, Umzugsreinigung, Teppichreinigung und mehr.
+          </p>
+        </div>
+        <div id="tab-industrie" style="display:none">
+          <p class="pr-body" style="margin-bottom:20px">
+            Industrielle Reinigung erfordert Spezialwissen. Unser geschultes Team übernimmt Maschinenreinigung, Hallenpflege und Gefahrstoffentsorgung — sicher und effizient.
+          </p>
+        </div>
+
+        <a href="about.html" class="pr-btn pr-btn-yellow">
+          Mehr über uns
+          <span class="arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="sr-right">
+        <img class="pr-about-img" src="assets/images/glasreinigung.png" alt="Glasreinigung">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ═══════════════════════════════════════════ -->
+<section id="pr-testimonials">
+  <div class="pr-container">
+    <div class="pr-test-header sr">
+      <span class="pr-eyebrow" style="color:var(--pr-yellow)">Unsere Kunden sagen</span>
+      <h2 class="pr-h2" style="color:#fff;margin-top:10px">Danke, Deutschland 🙏</h2>
+    </div>
+    <div class="pr-test-grid">
+      <div class="pr-test-card sr sr-d1">
+        <div class="pr-test-stars">★★★★★</div>
+        <p class="pr-test-text">„Proreinigung hat unsere Büroräume in ein neues Glänzen versetzt. Pünktlich, professionell und zuverlässig. Wir würden sie jedem empfehlen!"</p>
+        <div class="pr-test-author">
+          <div class="pr-test-avatar">MK</div>
+          <div>
+            <div class="pr-test-name">Markus Kellner</div>
+            <div class="pr-test-role">Geschäftsführer, Kellner GmbH</div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-test-card sr sr-d2">
+        <div class="pr-test-stars">★★★★★</div>
+        <p class="pr-test-text">„Seit 3 Jahren sind wir treue Kunden von Proreinigung. Die Qualität ist konstant hoch und das Team ist immer freundlich und diskret."</p>
+        <div class="pr-test-author">
+          <div class="pr-test-avatar">SB</div>
+          <div>
+            <div class="pr-test-name">Sandra Braun</div>
+            <div class="pr-test-role">Office Manager, TechStart AG</div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-test-card sr sr-d3">
+        <div class="pr-test-stars">★★★★★</div>
+        <p class="pr-test-text">„Die Industriereinigung in unserem Werk wurde hervorragend durchgeführt. Sehr kompetent und schnell — wir sind begeistert!"</p>
+        <div class="pr-test-author">
+          <div class="pr-test-avatar">TW</div>
+          <div>
+            <div class="pr-test-name">Thomas Weber</div>
+            <div class="pr-test-role">Werkleiter, Weber Industrie</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ════════════════════════════════════════════════════ -->
+<section id="pr-cta">
+  <div class="pr-container">
+    <div class="pr-cta-inner">
+      <div class="pr-cta-text sr">
+        <strong>Bereit für makellose Sauberkeit?<br>Jetzt Angebot anfordern.</strong>
+        <p>Kontaktieren Sie uns — Ihr Angebot ist kostenlos und unverbindlich.</p>
+      </div>
+      <div class="pr-cta-actions sr sr-d1">
+        <a href="quote.html" class="pr-btn pr-btn-blue">
+          Kostenloses Angebot
+          <span style="width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </a>
+        <a href="tel:+491637606478" class="pr-btn" style="background:var(--pr-dark);color:#fff">
+          <i class="fas fa-phone" style="font-size:.85rem"></i> Jetzt anrufen
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<footer id="pr-footer">
+  <div class="pr-container">
+    <div class="pr-footer-grid">
+      <div class="pr-footer-brand">
+        <img src="assets/images/logo.png" alt="Proreinigung" style="height:90px;width:auto">
+        <p>Ihr zuverlässiger Reinigungspartner in Deutschland. Professionell, nachhaltig und effizient — seit über 15 Jahren.</p>
+        <div class="pr-footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="XING"><i class="fab fa-xing"></i></a>
+        </div>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="services.html">Büroreinigung</a></li>
+          <li><a href="services.html">Industriereinigung</a></li>
+          <li><a href="services.html">Glasreinigung</a></li>
+          <li><a href="services.html">Grundreinigung</a></li>
+          <li><a href="services.html">Fassadenreinigung</a></li>
+          <li><a href="services.html">Teppichreinigung</a></li>
+          <li><a href="services.html">Parkhausreinigung</a></li>
+          <li><a href="services.html">Krankenhausreinigung</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Unternehmen</h4>
+        <ul>
+          <li><a href="about.html">Über uns</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="careers.html">Karriere</a></li>
+          <li><a href="quote.html">Angebot anfragen</a></li>
+          <li><a href="contact.html">Kontakt</a></li>
+          <li><a href="login.html">Mein Konto</a></li>
+        </ul>
+      </div>
+      <div class="pr-footer-col">
+        <h4>Kontakt</h4>
+        <div class="pr-footer-contact">
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fab fa-whatsapp"></i></div>
+            <div class="tx"><a href="https://wa.me/491637606478">+49 163 7606478</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-envelope"></i></div>
+            <div class="tx"><a href="mailto:Proreinigung@gmail.com">Proreinigung@gmail.com</a></div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="tx">Rheydter Str. 254<br>41065 Mönchengladbach</div>
+          </div>
+          <div class="pr-footer-contact-item">
+            <div class="ic"><i class="fas fa-clock"></i></div>
+            <div class="tx">Mo–Fr: 07:00–18:00<br>Sa: 08:00–14:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pr-footer-bottom">
+      <p>© 2026 Proreinigung GmbH. Alle Rechte vorbehalten.</p>
+      <div class="pr-footer-legal">
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp -->
+<div class="wa-float">
+  <a href="https://wa.me/491637606478" target="_blank" class="wa-btn" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+</div>
+
+<button class="back-top" id="back-top" aria-label="Nach oben" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/db.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ── Navbar ──────────────────────────────────────────────────
+const navbar = document.getElementById('pr-navbar');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    navbar.classList.remove('transparent');
+    navbar.classList.add('solid');
+  } else {
+    navbar.classList.remove('solid');
+    navbar.classList.add('transparent');
+  }
+  document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+});
+
+// ── Mobile menu ──────────────────────────────────────────────
+document.getElementById('pr-ham').addEventListener('click', () => {
+  document.getElementById('pr-mobile').classList.toggle('open');
+});
+
+// ── Hero bg animation ────────────────────────────────────────
+setTimeout(() => { document.getElementById('pr-hero').classList.add('loaded'); }, 100);
+
+// ── Service scroll ────────────────────────────────────────────
+const svcScroll = document.getElementById('svc-scroll');
+document.getElementById('svc-prev').addEventListener('click', () => { svcScroll.scrollBy({ left: -320, behavior: 'smooth' }); });
+document.getElementById('svc-next').addEventListener('click', () => { svcScroll.scrollBy({ left: 320, behavior: 'smooth' }); });
+
+// ── About tabs ───────────────────────────────────────────────
+document.querySelectorAll('.pr-about-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pr-about-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['gewerbe','privat','industrie'].forEach(t => {
+      document.getElementById('tab-' + t).style.display = 'none';
+    });
+    document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+  });
+});
+
+// ── Scroll reveal ─────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.sr,.sr-left,.sr-right').forEach(el => observer.observe(el));
+
+// ── Counter animation ─────────────────────────────────────────
+function animateCounter(id, target, duration = 1600) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  const update = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(ease * target).toLocaleString('de-DE');
+    if (t < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter('cnt-1', 500);
+      animateCounter('cnt-2', 12000);
+      animateCounter('cnt-3', 150);
+      animateCounter('cnt-4', 15);
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const statsEl = document.getElementById('pr-stats');
+if (statsEl) statsObserver.observe(statsEl);
+
+// ── Auth: show login/account link ────────────────────────────
+(async () => {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      const loginLinks = document.querySelectorAll('a[href="login.html"]');
+      loginLinks.forEach(el => { el.href = 'dashboard.html'; el.textContent = 'Mein Konto'; });
+    }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

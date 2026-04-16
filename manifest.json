@@ -1,0 +1,27 @@
+{
+  "name": "Proreinigung Team",
+  "short_name": "Pro Team",
+  "description": "Proreinigung Team Portal — Aufträge, Chat & Dashboard",
+  "start_url": "/team/dashboard.html",
+  "display": "standalone",
+  "background_color": "#0A0E1A",
+  "theme_color": "#0A0E1A",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "assets/images/Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": []
+}
